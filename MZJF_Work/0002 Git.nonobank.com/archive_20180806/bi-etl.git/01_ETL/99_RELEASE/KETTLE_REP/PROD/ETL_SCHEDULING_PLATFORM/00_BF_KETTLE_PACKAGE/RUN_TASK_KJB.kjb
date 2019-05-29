@@ -1,0 +1,1082 @@
+<job>
+  <name>RUN_TASK_KJB</name>
+    <description/>
+    <extended_description/>
+    <job_version/>
+    <job_status>0</job_status>
+  <directory>&#x2f;ETL_SCHEDULING_PLATFORM&#x2f;00_BF_KETTLE_PACKAGE</directory>
+  <created_user>-</created_user>
+  <created_date>2016&#x2f;12&#x2f;26 10&#x3a;54&#x3a;58.960</created_date>
+  <modified_user>-</modified_user>
+  <modified_date>2017&#x2f;07&#x2f;06 14&#x3a;12&#x3a;16.064</modified_date>
+    <parameters>
+        <parameter>
+            <name>CON_CNT</name>
+            <default_value/>
+            <description/>
+        </parameter>
+        <parameter>
+            <name>FIELD_LIST</name>
+            <default_value/>
+            <description/>
+        </parameter>
+        <parameter>
+            <name>FROM_JNDI_NAME</name>
+            <default_value/>
+            <description/>
+        </parameter>
+        <parameter>
+            <name>FROM_TABLE_NAME</name>
+            <default_value/>
+            <description/>
+        </parameter>
+        <parameter>
+            <name>FROM_TABLE_SCHEMA</name>
+            <default_value/>
+            <description/>
+        </parameter>
+        <parameter>
+            <name>ID</name>
+            <default_value/>
+            <description/>
+        </parameter>
+        <parameter>
+            <name>INCREMENT_FIELD</name>
+            <default_value/>
+            <description/>
+        </parameter>
+        <parameter>
+            <name>OFFSET</name>
+            <default_value/>
+            <description/>
+        </parameter>
+        <parameter>
+            <name>PRIMARY_KEY</name>
+            <default_value/>
+            <description/>
+        </parameter>
+        <parameter>
+            <name>PRIMARY_KEY_1</name>
+            <default_value/>
+            <description/>
+        </parameter>
+        <parameter>
+            <name>PRIMARY_KEY_2</name>
+            <default_value/>
+            <description/>
+        </parameter>
+        <parameter>
+            <name>RUN_ID</name>
+            <default_value/>
+            <description/>
+        </parameter>
+        <parameter>
+            <name>TO_JNDI_NAME</name>
+            <default_value/>
+            <description/>
+        </parameter>
+        <parameter>
+            <name>TO_TABLE_NAME</name>
+            <default_value/>
+            <description/>
+        </parameter>
+        <parameter>
+            <name>TO_TABLE_SCHEMA</name>
+            <default_value/>
+            <description/>
+        </parameter>
+    </parameters>
+  <connection>
+    <name>BF_ETL</name>
+    <server/>
+    <type>MYSQL</type>
+    <access>JNDI</access>
+    <database>BF_ETL</database>
+    <port>1521</port>
+    <username/>
+    <password>Encrypted </password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
+      <attribute><code>PRESERVE_RESERVED_WORD_CASE</code><attribute>Y</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>STREAM_RESULTS</code><attribute>Y</attribute></attribute>
+      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>SUPPORTS_TIMESTAMP_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>BF_SOURCE</name>
+    <server/>
+    <type>MYSQL</type>
+    <access>JNDI</access>
+    <database>&#x24;&#x7b;FROM_JNDI_NAME&#x7d;</database>
+    <port>1521</port>
+    <username/>
+    <password>Encrypted </password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
+      <attribute><code>PRESERVE_RESERVED_WORD_CASE</code><attribute>Y</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>STREAM_RESULTS</code><attribute>Y</attribute></attribute>
+      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>SUPPORTS_TIMESTAMP_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>BF_TARGET</name>
+    <server/>
+    <type>MYSQL</type>
+    <access>JNDI</access>
+    <database>&#x24;&#x7b;TO_JNDI_NAME&#x7d;</database>
+    <port>1521</port>
+    <username/>
+    <password>Encrypted </password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
+      <attribute><code>PRESERVE_RESERVED_WORD_CASE</code><attribute>Y</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>STREAM_RESULTS</code><attribute>Y</attribute></attribute>
+      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>SUPPORTS_TIMESTAMP_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
+    <slaveservers>
+         <slaveserver><name>master</name><hostname>172.16.2.146</hostname><port>9080</port><webAppName/><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master><sslMode>N</sslMode></slaveserver>
+    </slaveservers>
+<job-log-table><connection/>
+<schema/>
+<table/>
+<size_limit_lines/>
+<interval/>
+<timeout_days/>
+<field><id>ID_JOB</id><enabled>Y</enabled><name>ID_JOB</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>JOBNAME</id><enabled>Y</enabled><name>JOBNAME</name></field><field><id>STATUS</id><enabled>Y</enabled><name>STATUS</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>STARTDATE</id><enabled>Y</enabled><name>STARTDATE</name></field><field><id>ENDDATE</id><enabled>Y</enabled><name>ENDDATE</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>DEPDATE</id><enabled>Y</enabled><name>DEPDATE</name></field><field><id>REPLAYDATE</id><enabled>Y</enabled><name>REPLAYDATE</name></field><field><id>LOG_FIELD</id><enabled>Y</enabled><name>LOG_FIELD</name></field><field><id>EXECUTING_SERVER</id><enabled>N</enabled><name>EXECUTING_SERVER</name></field><field><id>EXECUTING_USER</id><enabled>N</enabled><name>EXECUTING_USER</name></field><field><id>START_JOB_ENTRY</id><enabled>N</enabled><name>START_JOB_ENTRY</name></field><field><id>CLIENT</id><enabled>N</enabled><name>CLIENT</name></field></job-log-table>
+<jobentry-log-table><connection/>
+<schema/>
+<table/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>JOBNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>JOBENTRYNAME</id><enabled>Y</enabled><name>STEPNAME</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>RESULT</id><enabled>Y</enabled><name>RESULT</name></field><field><id>NR_RESULT_ROWS</id><enabled>Y</enabled><name>NR_RESULT_ROWS</name></field><field><id>NR_RESULT_FILES</id><enabled>Y</enabled><name>NR_RESULT_FILES</name></field><field><id>LOG_FIELD</id><enabled>N</enabled><name>LOG_FIELD</name></field><field><id>COPY_NR</id><enabled>N</enabled><name>COPY_NR</name></field></jobentry-log-table>
+<channel-log-table><connection/>
+<schema/>
+<table/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>LOGGING_OBJECT_TYPE</id><enabled>Y</enabled><name>LOGGING_OBJECT_TYPE</name></field><field><id>OBJECT_NAME</id><enabled>Y</enabled><name>OBJECT_NAME</name></field><field><id>OBJECT_COPY</id><enabled>Y</enabled><name>OBJECT_COPY</name></field><field><id>REPOSITORY_DIRECTORY</id><enabled>Y</enabled><name>REPOSITORY_DIRECTORY</name></field><field><id>FILENAME</id><enabled>Y</enabled><name>FILENAME</name></field><field><id>OBJECT_ID</id><enabled>Y</enabled><name>OBJECT_ID</name></field><field><id>OBJECT_REVISION</id><enabled>Y</enabled><name>OBJECT_REVISION</name></field><field><id>PARENT_CHANNEL_ID</id><enabled>Y</enabled><name>PARENT_CHANNEL_ID</name></field><field><id>ROOT_CHANNEL_ID</id><enabled>Y</enabled><name>ROOT_CHANNEL_ID</name></field></channel-log-table>
+   <pass_batchid>N</pass_batchid>
+   <shared_objects_file/>
+  <entries>
+    <entry>
+      <name>START</name>
+      <description/>
+      <type>SPECIAL</type>
+      <start>Y</start>
+      <dummy>N</dummy>
+      <repeat>N</repeat>
+      <schedulerType>0</schedulerType>
+      <intervalSeconds>0</intervalSeconds>
+      <intervalMinutes>60</intervalMinutes>
+      <hour>12</hour>
+      <minutes>0</minutes>
+      <weekDay>1</weekDay>
+      <DayOfMonth>1</DayOfMonth>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>64</xloc>
+      <yloc>160</yloc>
+      </entry>
+    <entry>
+      <name>DUMMY</name>
+      <description/>
+      <type>SPECIAL</type>
+      <start>N</start>
+      <dummy>Y</dummy>
+      <repeat>N</repeat>
+      <schedulerType>0</schedulerType>
+      <intervalSeconds>0</intervalSeconds>
+      <intervalMinutes>60</intervalMinutes>
+      <hour>12</hour>
+      <minutes>0</minutes>
+      <weekDay>1</weekDay>
+      <DayOfMonth>1</DayOfMonth>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>576</xloc>
+      <yloc>592</yloc>
+      </entry>
+    <entry>
+      <name>SYNC_DATA</name>
+      <description/>
+      <type>TRANS</type>
+      <specification_method>rep_name</specification_method>
+      <trans_object_id/>
+      <filename/>
+      <transname>SYNC_DATA</transname>
+      <directory>&#x2f;ETL_SCHEDULING_PLATFORM&#x2f;00_BF_KETTLE_PACKAGE</directory>
+      <arg_from_previous>N</arg_from_previous>
+      <params_from_previous>N</params_from_previous>
+      <exec_per_row>N</exec_per_row>
+      <clear_rows>N</clear_rows>
+      <clear_files>N</clear_files>
+      <set_logfile>N</set_logfile>
+      <logfile/>
+      <logext/>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <loglevel>Basic</loglevel>
+      <cluster>N</cluster>
+      <slave_server_name/>
+      <set_append_logfile>N</set_append_logfile>
+      <wait_until_finished>Y</wait_until_finished>
+      <follow_abort_remote>N</follow_abort_remote>
+      <create_parent_folder>N</create_parent_folder>
+      <logging_remote_work>N</logging_remote_work>
+      <parameters>        <pass_all_parameters>Y</pass_all_parameters>
+      </parameters>      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>976</xloc>
+      <yloc>160</yloc>
+      </entry>
+    <entry>
+      <name>&#x6210;&#x529f;</name>
+      <description/>
+      <type>SUCCESS</type>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>1216</xloc>
+      <yloc>160</yloc>
+      </entry>
+    <entry>
+      <name>&#x8bbe;&#x7f6e;&#x53d8;&#x91cf;</name>
+      <description/>
+      <type>SET_VARIABLES</type>
+      <replacevars>Y</replacevars>
+      <filename/>
+      <file_variable_type>JVM</file_variable_type>
+      <fields>
+        <field>
+          <variable_name>V_LOOP_CNT</variable_name>
+          <variable_value>0</variable_value>
+          <variable_type>JVM</variable_type>
+        </field>
+        <field>
+          <variable_name>V_MAX_LOOP</variable_name>
+          <variable_value>18</variable_value>
+          <variable_type>ROOT_JOB</variable_type>
+        </field>
+        <field>
+          <variable_name>V_WAIT_TIME</variable_name>
+          <variable_value>10</variable_value>
+          <variable_type>ROOT_JOB</variable_type>
+        </field>
+        <field>
+          <variable_name>P_K</variable_name>
+          <variable_value>&#x24;&#x7b;PRIMARY_KEY&#x7d;</variable_value>
+          <variable_type>ROOT_JOB</variable_type>
+        </field>
+        <field>
+          <variable_name>P_K_1</variable_name>
+          <variable_value>&#x24;&#x7b;PRIMARY_KEY_1&#x7d;</variable_value>
+          <variable_type>ROOT_JOB</variable_type>
+        </field>
+        <field>
+          <variable_name>P_K_2</variable_name>
+          <variable_value>&#x24;&#x7b;PRIMARY_KEY_2&#x7d;</variable_value>
+          <variable_type>ROOT_JOB</variable_type>
+        </field>
+        <field>
+          <variable_name>THREAD_CON_CNT</variable_name>
+          <variable_value>&#x24;&#x7b;CON_CNT&#x7d;</variable_value>
+          <variable_type>ROOT_JOB</variable_type>
+        </field>
+      </fields>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>176</xloc>
+      <yloc>160</yloc>
+      </entry>
+    <entry>
+      <name>UPDATE run_id</name>
+      <description/>
+      <type>SQL</type>
+      <sql>  UPDATE ETL_BF_TASK_M2M&#xd;&#xa;  SET run_id&#x3d;run_id&#x2b;1&#xd;&#xa;  WHERE id &#x3d; &#x24;&#x7b;ID&#x7d; &#x3b;</sql>
+      <useVariableSubstitution>T</useVariableSubstitution>
+      <sqlfromfile>F</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>F</sendOneStatement>
+      <connection>BF_ETL</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>272</xloc>
+      <yloc>160</yloc>
+      </entry>
+    <entry>
+      <name>log BEGIN_TIME</name>
+      <description/>
+      <type>SQL</type>
+      <sql>INSERT INTO ETL_BF_TASK_LOG &#x28;&#xd;&#xa;  RUN_ID,&#xd;&#xa;  TASK_ID,&#xd;&#xa;  TASK_NAME,&#xd;&#xa;  TASK_BEGIN_TIME,&#xd;&#xa;  TASK_BEGIN_TIME_REAL,&#xd;&#xa;  TASK_END_TIME,&#xd;&#xa;  STATUS&#xd;&#xa;&#xd;&#xa;&#x29; &#xd;&#xa;SELECT &#xd;&#xa;  &#x24;&#x7b;RUN_ID&#x7d; AS RUN_ID,&#xd;&#xa;  &#x24;&#x7b;ID&#x7d; AS TASK_ID,&#xd;&#xa;  CONCAT&#x28;&#x27;&#x24;&#x7b;TO_TABLE_SCHEMA&#x7d;&#x27;,&#x27;.&#x27;,&#x27;&#x24;&#x7b;TO_TABLE_NAME&#x7d;&#x27;&#x29; AS TASK_NAME,&#xd;&#xa;  SYSDATE&#x28;&#x29;  AS TASK_BEGIN_TIME,&#xd;&#xa;  NULL AS  TASK_BEGIN_TIME_REAL,&#xd;&#xa;  NULL AS TASK_END_TIME,&#xd;&#xa;  1 AS  STATUS&#xd;&#xa;</sql>
+      <useVariableSubstitution>T</useVariableSubstitution>
+      <sqlfromfile>F</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>F</sendOneStatement>
+      <connection>BF_ETL</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>384</xloc>
+      <yloc>160</yloc>
+      </entry>
+    <entry>
+      <name>&#x9600;&#x503c;&#x5224;&#x65ad;</name>
+      <description/>
+      <type>SIMPLE_EVAL</type>
+      <valuetype>variable</valuetype>
+      <fieldname/>
+      <variablename>&#x24;&#x7b;V_LOOP_CNT&#x7d;</variablename>
+      <fieldtype>number</fieldtype>
+      <mask/>
+      <comparevalue>&#x24;&#x7b;V_MAX_LOOP&#x7d;</comparevalue>
+      <minvalue/>
+      <maxvalue/>
+      <successcondition>equal</successcondition>
+      <successnumbercondition>smaller</successnumbercondition>
+      <successbooleancondition>false</successbooleancondition>
+      <successwhenvarset>N</successwhenvarset>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>752</xloc>
+      <yloc>432</yloc>
+      </entry>
+    <entry>
+      <name>JavaScript</name>
+      <description/>
+      <type>EVAL</type>
+      <script>var i &#x3d; new Number&#x28;parent_job.getVariable&#x28;&#x22;V_LOOP_CNT&#x22;&#x29;&#x29; &#x2b; 1&#x3b;&#xa;parent_job.setVariable&#x28;&#x22;V_LOOP_CNT&#x22;,i&#x29;&#x3b;&#xa;true&#x3b;&#xa;</script>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>752</xloc>
+      <yloc>336</yloc>
+      </entry>
+    <entry>
+      <name>&#x68c0;&#x67e5;&#x6e90;&#x8868;</name>
+      <description/>
+      <type>TABLE_EXISTS</type>
+      <tablename>&#x24;&#x7b;FROM_TABLE_NAME&#x7d;</tablename>
+      <schemaname/>
+      <connection>BF_SOURCE</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>496</xloc>
+      <yloc>160</yloc>
+      </entry>
+    <entry>
+      <name>&#x68c0;&#x67e5;&#x76ee;&#x6807;&#x8868;</name>
+      <description/>
+      <type>TABLE_EXISTS</type>
+      <tablename>&#x24;&#x7b;TO_TABLE_NAME&#x7d;</tablename>
+      <schemaname/>
+      <connection>BF_TARGET</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>576</xloc>
+      <yloc>160</yloc>
+      </entry>
+    <entry>
+      <name>DUMMY 2</name>
+      <description/>
+      <type>SPECIAL</type>
+      <start>N</start>
+      <dummy>Y</dummy>
+      <repeat>N</repeat>
+      <schedulerType>0</schedulerType>
+      <intervalSeconds>0</intervalSeconds>
+      <intervalMinutes>60</intervalMinutes>
+      <hour>12</hour>
+      <minutes>0</minutes>
+      <weekDay>1</weekDay>
+      <DayOfMonth>1</DayOfMonth>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>496</xloc>
+      <yloc>592</yloc>
+      </entry>
+    <entry>
+      <name>&#x6e90;&#x8868;&#x6570;&#x636e;&#x662f;&#x5426;&#x51c6;&#x5907;&#x597d;</name>
+      <description/>
+      <type>EVAL_TABLE_CONTENT</type>
+      <connection>BF_SOURCE</connection>
+      <schemaname>ETL</schemaname>
+      <tablename/>
+      <success_condition>rows_count_greater</success_condition>
+      <limit>0</limit>
+      <is_custom_sql>Y</is_custom_sql>
+      <is_usevars>Y</is_usevars>
+      <custom_sql>SELECT &#xd;&#xa;1&#xd;&#xa;FROM&#xd;&#xa;  ETL.ETL_BF_TABLE_LAST_DATE &#xd;&#xa;  WHERE TABLE_NAME &#x3d; CONCAT&#x28;&#x27;&#x24;&#x7b;FROM_TABLE_SCHEMA&#x7d;&#x27;,&#x27;.&#x27;,&#x27;&#x24;&#x7b;FROM_TABLE_NAME&#x7d;&#x27;&#x29;&#xd;&#xa;  AND LAST_DATE&#x3e;&#x3d;CURDATE&#x28;&#x29;&#xd;&#xa; &#x3b;</custom_sql>
+      <add_rows_result>N</add_rows_result>
+      <clear_result_rows>Y</clear_result_rows>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>752</xloc>
+      <yloc>160</yloc>
+      </entry>
+    <entry>
+      <name>DUMMY 3</name>
+      <description/>
+      <type>SPECIAL</type>
+      <start>N</start>
+      <dummy>Y</dummy>
+      <repeat>N</repeat>
+      <schedulerType>0</schedulerType>
+      <intervalSeconds>0</intervalSeconds>
+      <intervalMinutes>60</intervalMinutes>
+      <hour>12</hour>
+      <minutes>0</minutes>
+      <weekDay>1</weekDay>
+      <DayOfMonth>1</DayOfMonth>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>752</xloc>
+      <yloc>272</yloc>
+      </entry>
+    <entry>
+      <name>DUMMY 4</name>
+      <description/>
+      <type>SPECIAL</type>
+      <start>N</start>
+      <dummy>Y</dummy>
+      <repeat>N</repeat>
+      <schedulerType>0</schedulerType>
+      <intervalSeconds>0</intervalSeconds>
+      <intervalMinutes>60</intervalMinutes>
+      <hour>12</hour>
+      <minutes>0</minutes>
+      <weekDay>1</weekDay>
+      <DayOfMonth>1</DayOfMonth>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>656</xloc>
+      <yloc>160</yloc>
+      </entry>
+    <entry>
+      <name>log end_TIME -1</name>
+      <description/>
+      <type>SQL</type>
+      <sql>UPDATE ETL_BF_TASK_LOG&#xd;&#xa;SET STATUS&#x3d;-1&#xd;&#xa;,TASK_END_TIME&#x3d;SYSDATE&#x28;&#x29;&#xd;&#xa;,TASK_BEGIN_TIME_REAL&#x3d;SYSDATE&#x28;&#x29;&#xd;&#xa;WHERE RUN_ID&#x3d;&#x24;&#x7b;RUN_ID&#x7d; AND TASK_ID&#x3d; &#x24;&#x7b;ID&#x7d;&#x3b;&#xd;&#xa;&#xd;&#xa;</sql>
+      <useVariableSubstitution>T</useVariableSubstitution>
+      <sqlfromfile>F</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>F</sendOneStatement>
+      <connection>BF_ETL</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>752</xloc>
+      <yloc>592</yloc>
+      </entry>
+    <entry>
+      <name>log end_TIME 0</name>
+      <description/>
+      <type>SQL</type>
+      <sql>UPDATE ETL_BF_TASK_LOG&#xd;&#xa;SET STATUS&#x3d;0&#xd;&#xa;,TASK_END_TIME&#x3d;SYSDATE&#x28;&#x29;&#xd;&#xa;WHERE RUN_ID&#x3d;&#x24;&#x7b;RUN_ID&#x7d; AND TASK_ID&#x3d; &#x24;&#x7b;ID&#x7d;&#x3b;&#xd;&#xa;</sql>
+      <useVariableSubstitution>T</useVariableSubstitution>
+      <sqlfromfile>F</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>F</sendOneStatement>
+      <connection>BF_ETL</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>1104</xloc>
+      <yloc>160</yloc>
+      </entry>
+    <entry>
+      <name>&#x4e2d;&#x6b62;&#x4f5c;&#x4e1a;</name>
+      <description/>
+      <type>ABORT</type>
+      <message>&#x4f5c;&#x4e1a;&#x5931;&#x8d25;VC5310.0</message>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>976</xloc>
+      <yloc>592</yloc>
+      </entry>
+    <entry>
+      <name>log BEGIN_TIME_REAL</name>
+      <description/>
+      <type>SQL</type>
+      <sql>UPDATE ETL_BF_TASK_LOG&#xd;&#xa;SET  TASK_BEGIN_TIME_REAL&#x3d;SYSDATE&#x28;&#x29;&#xd;&#xa;WHERE RUN_ID&#x3d;&#x24;&#x7b;RUN_ID&#x7d; AND TASK_ID&#x3d; &#x24;&#x7b;ID&#x7d;&#x3b;&#xd;&#xa;</sql>
+      <useVariableSubstitution>T</useVariableSubstitution>
+      <sqlfromfile>F</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>F</sendOneStatement>
+      <connection>BF_ETL</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>880</xloc>
+      <yloc>160</yloc>
+      </entry>
+    <entry>
+      <name>log end_TIME -1  </name>
+      <description/>
+      <type>SQL</type>
+      <sql>UPDATE ETL_BF_TASK_LOG&#xd;&#xa;SET STATUS&#x3d;-1&#xd;&#xa;,TASK_END_TIME&#x3d;SYSDATE&#x28;&#x29;&#xd;&#xa;WHERE RUN_ID&#x3d;&#x24;&#x7b;RUN_ID&#x7d; AND TASK_ID&#x3d; &#x24;&#x7b;ID&#x7d;&#x3b;&#xd;&#xa;&#xd;&#xa;</sql>
+      <useVariableSubstitution>T</useVariableSubstitution>
+      <sqlfromfile>F</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>F</sendOneStatement>
+      <connection>BF_ETL</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>976</xloc>
+      <yloc>336</yloc>
+      </entry>
+    <entry>
+      <name>log_D A</name>
+      <description/>
+      <type>SQL</type>
+      <sql>INSERT INTO ETL_BF_TASK_LOG_DETAIL &#x28;  &#xd;&#xa;  RUN_ID,&#xd;&#xa;  TASK_ID,&#xd;&#xa;  EVENT_TIME,&#xd;&#xa;  EVENT_TYPE,&#xd;&#xa;  EVENT_DESC&#xd;&#xa;&#x29; &#xd;&#xa;SELECT &#xd;&#xa;  &#x24;&#x7b;RUN_ID&#x7d;,&#xd;&#xa;  &#x24;&#x7b;ID&#x7d;,&#xd;&#xa;  SYSDATE&#x28;&#x29;,&#xd;&#xa;  &#x27;INFO&#x27;,&#xd;&#xa;  CONCAT&#x28;&#x27;&#x24;&#x7b;TO_TABLE_SCHEMA&#x7d;&#x27;,&#x27;.&#x27;,&#x27;&#x24;&#x7b;TO_TABLE_NAME&#x7d;&#x27;,&#x27; &#x4efb;&#x52a1;&#x5f00;&#x59cb;&#x3002;&#x27;&#x29; &#x3b;</sql>
+      <useVariableSubstitution>T</useVariableSubstitution>
+      <sqlfromfile>F</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>F</sendOneStatement>
+      <connection>BF_ETL</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>128</xloc>
+      <yloc>80</yloc>
+      </entry>
+    <entry>
+      <name>log_D A 3</name>
+      <description/>
+      <type>SQL</type>
+      <sql>INSERT INTO ETL_BF_TASK_LOG_DETAIL &#x28;  &#xd;&#xa;  RUN_ID,&#xd;&#xa;  TASK_ID,&#xd;&#xa;  EVENT_TIME,&#xd;&#xa;  EVENT_TYPE,&#xd;&#xa;  EVENT_DESC&#xd;&#xa;&#x29; &#xd;&#xa;SELECT &#xd;&#xa;  &#x24;&#x7b;RUN_ID&#x7d;,&#xd;&#xa;  &#x24;&#x7b;ID&#x7d;,&#xd;&#xa;  SYSDATE&#x28;&#x29;,&#xd;&#xa;  &#x27;INFO&#x27;,&#xd;&#xa;  &#x27;&#x68c0;&#x67e5;&#x6e90;&#x8868;&#x662f;&#x5426;&#x5b58;&#x5728;&#x3002;&#x27; &#x3b;</sql>
+      <useVariableSubstitution>T</useVariableSubstitution>
+      <sqlfromfile>F</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>F</sendOneStatement>
+      <connection>BF_ETL</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>448</xloc>
+      <yloc>80</yloc>
+      </entry>
+    <entry>
+      <name>log_D A 4</name>
+      <description/>
+      <type>SQL</type>
+      <sql>INSERT INTO ETL_BF_TASK_LOG_DETAIL &#x28;  &#xd;&#xa;  RUN_ID,&#xd;&#xa;  TASK_ID,&#xd;&#xa;  EVENT_TIME,&#xd;&#xa;  EVENT_TYPE,&#xd;&#xa;  EVENT_DESC&#xd;&#xa;&#x29; &#xd;&#xa;SELECT &#xd;&#xa;  &#x24;&#x7b;RUN_ID&#x7d;,&#xd;&#xa;  &#x24;&#x7b;ID&#x7d;,&#xd;&#xa;  SYSDATE&#x28;&#x29;,&#xd;&#xa;  &#x27;INFO&#x27;,&#xd;&#xa;  &#x27;&#x68c0;&#x67e5;&#x76ee;&#x6807;&#x8868;&#x662f;&#x5426;&#x5b58;&#x5728;&#x3002;&#x27; &#x3b;</sql>
+      <useVariableSubstitution>T</useVariableSubstitution>
+      <sqlfromfile>F</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>F</sendOneStatement>
+      <connection>BF_ETL</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>544</xloc>
+      <yloc>80</yloc>
+      </entry>
+    <entry>
+      <name>log_D A 5</name>
+      <description/>
+      <type>SQL</type>
+      <sql>INSERT INTO ETL_BF_TASK_LOG_DETAIL &#x28;  &#xd;&#xa;  RUN_ID,&#xd;&#xa;  TASK_ID,&#xd;&#xa;  EVENT_TIME,&#xd;&#xa;  EVENT_TYPE,&#xd;&#xa;  EVENT_DESC&#xd;&#xa;&#x29; &#xd;&#xa;SELECT &#xd;&#xa;  &#x24;&#x7b;RUN_ID&#x7d;,&#xd;&#xa;  &#x24;&#x7b;ID&#x7d;,&#xd;&#xa;  SYSDATE&#x28;&#x29;,&#xd;&#xa;  &#x27;ERROR&#x27;,&#xd;&#xa;  &#x27;&#x6e90;&#x8868;&#x4e0d;&#x5b58;&#x5728;&#x3002;&#x27;&#x3b;</sql>
+      <useVariableSubstitution>T</useVariableSubstitution>
+      <sqlfromfile>F</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>F</sendOneStatement>
+      <connection>BF_ETL</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>496</xloc>
+      <yloc>336</yloc>
+      </entry>
+    <entry>
+      <name>log_D A 6</name>
+      <description/>
+      <type>SQL</type>
+      <sql>INSERT INTO ETL_BF_TASK_LOG_DETAIL &#x28;  &#xd;&#xa;  RUN_ID,&#xd;&#xa;  TASK_ID,&#xd;&#xa;  EVENT_TIME,&#xd;&#xa;  EVENT_TYPE,&#xd;&#xa;  EVENT_DESC&#xd;&#xa;&#x29; &#xd;&#xa;SELECT &#xd;&#xa;  &#x24;&#x7b;RUN_ID&#x7d;,&#xd;&#xa;  &#x24;&#x7b;ID&#x7d;,&#xd;&#xa;  SYSDATE&#x28;&#x29;,&#xd;&#xa;  &#x27;ERROR&#x27;,&#xd;&#xa;  &#x27;&#x76ee;&#x6807;&#x8868;&#x4e0d;&#x5b58;&#x5728;&#x3002;&#x27;&#x3b;</sql>
+      <useVariableSubstitution>T</useVariableSubstitution>
+      <sqlfromfile>F</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>F</sendOneStatement>
+      <connection>BF_ETL</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>576</xloc>
+      <yloc>336</yloc>
+      </entry>
+    <entry>
+      <name>log_D A 9</name>
+      <description/>
+      <type>SQL</type>
+      <sql>INSERT INTO ETL_BF_TASK_LOG_DETAIL &#x28;  &#xd;&#xa;  RUN_ID,&#xd;&#xa;  TASK_ID,&#xd;&#xa;  EVENT_TIME,&#xd;&#xa;  EVENT_TYPE,&#xd;&#xa;  EVENT_DESC&#xd;&#xa;&#x29; &#xd;&#xa;SELECT &#xd;&#xa;  &#x24;&#x7b;RUN_ID&#x7d;,&#xd;&#xa;  &#x24;&#x7b;ID&#x7d;,&#xd;&#xa;  SYSDATE&#x28;&#x29;,&#xd;&#xa;  &#x27;ERROR&#x27;,&#xd;&#xa;  &#x27;&#x8d85;&#x8fc7;&#x9608;&#x503c;&#xff0c;&#x5faa;&#x73af;&#x9000;&#x51fa;&#xff0c;&#x6570;&#x636e;&#x672a;&#x540c;&#x6b65;&#x3002;&#x27;&#x3b;</sql>
+      <useVariableSubstitution>T</useVariableSubstitution>
+      <sqlfromfile>F</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>F</sendOneStatement>
+      <connection>BF_ETL</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>752</xloc>
+      <yloc>528</yloc>
+      </entry>
+    <entry>
+      <name>log_D A 10</name>
+      <description/>
+      <type>SQL</type>
+      <sql>INSERT INTO ETL_BF_TASK_LOG_DETAIL &#x28;  &#xd;&#xa;  RUN_ID,&#xd;&#xa;  TASK_ID,&#xd;&#xa;  EVENT_TIME,&#xd;&#xa;  EVENT_TYPE,&#xd;&#xa;  EVENT_DESC&#xd;&#xa;&#x29; &#xd;&#xa;SELECT &#xd;&#xa;  &#x24;&#x7b;RUN_ID&#x7d;,&#xd;&#xa;  &#x24;&#x7b;ID&#x7d;,&#xd;&#xa;  SYSDATE&#x28;&#x29;,&#xd;&#xa;  &#x27;INFO&#x27;,&#xd;&#xa;  &#x27;&#x5f00;&#x59cb;&#x6570;&#x636e;&#x540c;&#x6b65;&#x3002;&#x27; &#x3b;</sql>
+      <useVariableSubstitution>T</useVariableSubstitution>
+      <sqlfromfile>F</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>F</sendOneStatement>
+      <connection>BF_ETL</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>928</xloc>
+      <yloc>80</yloc>
+      </entry>
+    <entry>
+      <name>log_D A 11</name>
+      <description/>
+      <type>SQL</type>
+      <sql>INSERT INTO ETL_BF_TASK_LOG_DETAIL &#x28;  &#xd;&#xa;  RUN_ID,&#xd;&#xa;  TASK_ID,&#xd;&#xa;  EVENT_TIME,&#xd;&#xa;  EVENT_TYPE,&#xd;&#xa;  EVENT_DESC&#xd;&#xa;&#x29; &#xd;&#xa;SELECT &#xd;&#xa;  &#x24;&#x7b;RUN_ID&#x7d;,&#xd;&#xa;  &#x24;&#x7b;ID&#x7d;,&#xd;&#xa;  SYSDATE&#x28;&#x29;,&#xd;&#xa;  &#x27;INFO&#x27;,&#xd;&#xa;  &#x27;&#x6570;&#x636e;&#x540c;&#x6b65;&#x7ed3;&#x675f;&#x3002;&#x27; &#x3b;</sql>
+      <useVariableSubstitution>T</useVariableSubstitution>
+      <sqlfromfile>F</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>F</sendOneStatement>
+      <connection>BF_ETL</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>1040</xloc>
+      <yloc>80</yloc>
+      </entry>
+    <entry>
+      <name>log_D A 12</name>
+      <description/>
+      <type>SQL</type>
+      <sql>INSERT INTO ETL_BF_TASK_LOG_DETAIL &#x28;  &#xd;&#xa;  RUN_ID,&#xd;&#xa;  TASK_ID,&#xd;&#xa;  EVENT_TIME,&#xd;&#xa;  EVENT_TYPE,&#xd;&#xa;  EVENT_DESC&#xd;&#xa;&#x29; &#xd;&#xa;SELECT &#xd;&#xa;  &#x24;&#x7b;RUN_ID&#x7d;,&#xd;&#xa;  &#x24;&#x7b;ID&#x7d;,&#xd;&#xa;  SYSDATE&#x28;&#x29;,&#xd;&#xa;  &#x27;ERROR&#x27;,&#xd;&#xa;  &#x27;&#x6570;&#x636e;&#x540c;&#x6b65;&#x5931;&#x8d25;&#x3002;&#x27;&#x3b;</sql>
+      <useVariableSubstitution>T</useVariableSubstitution>
+      <sqlfromfile>F</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>F</sendOneStatement>
+      <connection>BF_ETL</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>976</xloc>
+      <yloc>272</yloc>
+      </entry>
+    <entry>
+      <name>log_D A 8</name>
+      <description/>
+      <type>SQL</type>
+      <sql>INSERT INTO ETL_BF_TASK_LOG_DETAIL &#x28;  &#xd;&#xa;  RUN_ID,&#xd;&#xa;  TASK_ID,&#xd;&#xa;  EVENT_TIME,&#xd;&#xa;  EVENT_TYPE,&#xd;&#xa;  EVENT_DESC&#xd;&#xa;&#x29; &#xd;&#xa;SELECT &#xd;&#xa;  &#x24;&#x7b;RUN_ID&#x7d;,&#xd;&#xa;  &#x24;&#x7b;ID&#x7d;,&#xd;&#xa;  SYSDATE&#x28;&#x29;,&#xd;&#xa;  &#x27;WARN&#x27;,&#xd;&#xa;  &#x27;&#x6e90;&#x8868;&#x6570;&#x636e;&#x672a;&#x51c6;&#x5907;&#x597d;&#xff0c;&#x5f00;&#x59cb;&#x7b2c;&#x24;&#x7b;V_LOOP_CNT&#x7d;&#x6b21;&#x7b49;&#x5f85;&#xff0c;&#x6bcf;&#x6b21;&#x24;&#x7b;V_WAIT_TIME&#x7d;&#x5206;&#x949f;&#x3002;&#x27; &#x3b;</sql>
+      <useVariableSubstitution>T</useVariableSubstitution>
+      <sqlfromfile>F</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>F</sendOneStatement>
+      <connection>BF_ETL</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>656</xloc>
+      <yloc>432</yloc>
+      </entry>
+    <entry>
+      <name>&#x7b49;&#x5f85;</name>
+      <description/>
+      <type>DELAY</type>
+      <maximumTimeout>&#x24;&#x7b;V_WAIT_TIME&#x7d;</maximumTimeout>
+      <scaletime>1</scaletime>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>656</xloc>
+      <yloc>336</yloc>
+      </entry>
+    <entry>
+      <name>log_D A 7</name>
+      <description/>
+      <type>SQL</type>
+      <sql>INSERT INTO ETL_BF_TASK_LOG_DETAIL &#x28;  &#xd;&#xa;  RUN_ID,&#xd;&#xa;  TASK_ID,&#xd;&#xa;  EVENT_TIME,&#xd;&#xa;  EVENT_TYPE,&#xd;&#xa;  EVENT_DESC&#xd;&#xa;&#x29; &#xd;&#xa;SELECT &#xd;&#xa;  &#x24;&#x7b;RUN_ID&#x7d;,&#xd;&#xa;  &#x24;&#x7b;ID&#x7d;,&#xd;&#xa;  SYSDATE&#x28;&#x29;,&#xd;&#xa;  &#x27;INFO&#x27;,&#xd;&#xa;  &#x27;&#x68c0;&#x67e5;&#x6e90;&#x8868;&#x6570;&#x636e;&#x662f;&#x5426;&#x51c6;&#x5907;ok&#x3002;&#x27; &#x3b;</sql>
+      <useVariableSubstitution>T</useVariableSubstitution>
+      <sqlfromfile>F</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>F</sendOneStatement>
+      <connection>BF_ETL</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>624</xloc>
+      <yloc>80</yloc>
+      </entry>
+  </entries>
+  <hops>
+    <hop>
+      <from>UPDATE run_id</from>
+      <to>log BEGIN_TIME</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>&#x8bbe;&#x7f6e;&#x53d8;&#x91cf;</from>
+      <to>UPDATE run_id</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>&#x6e90;&#x8868;&#x6570;&#x636e;&#x662f;&#x5426;&#x51c6;&#x5907;&#x597d;</from>
+      <to>DUMMY 3</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>N</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>DUMMY 3</from>
+      <to>JavaScript</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+    <hop>
+      <from>DUMMY 2</from>
+      <to>DUMMY</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+    <hop>
+      <from>DUMMY</from>
+      <to>log end_TIME -1</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+    <hop>
+      <from>log end_TIME -1</from>
+      <to>&#x4e2d;&#x6b62;&#x4f5c;&#x4e1a;</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>N</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+    <hop>
+      <from>log end_TIME 0</from>
+      <to>&#x6210;&#x529f;</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+    <hop>
+      <from>&#x6e90;&#x8868;&#x6570;&#x636e;&#x662f;&#x5426;&#x51c6;&#x5907;&#x597d;</from>
+      <to>log BEGIN_TIME_REAL</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>log end_TIME -1  </from>
+      <to>&#x4e2d;&#x6b62;&#x4f5c;&#x4e1a;</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>START</from>
+      <to>log_D A</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+    <hop>
+      <from>log_D A</from>
+      <to>&#x8bbe;&#x7f6e;&#x53d8;&#x91cf;</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>N</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+    <hop>
+      <from>log BEGIN_TIME</from>
+      <to>log_D A 3</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>log_D A 3</from>
+      <to>&#x68c0;&#x67e5;&#x6e90;&#x8868;</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>N</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+    <hop>
+      <from>&#x68c0;&#x67e5;&#x6e90;&#x8868;</from>
+      <to>log_D A 4</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>log_D A 4</from>
+      <to>&#x68c0;&#x67e5;&#x76ee;&#x6807;&#x8868;</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>N</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+    <hop>
+      <from>&#x68c0;&#x67e5;&#x76ee;&#x6807;&#x8868;</from>
+      <to>log_D A 6</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>N</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>log_D A 6</from>
+      <to>DUMMY</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+    <hop>
+      <from>&#x68c0;&#x67e5;&#x6e90;&#x8868;</from>
+      <to>log_D A 5</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>N</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>log_D A 5</from>
+      <to>DUMMY 2</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+    <hop>
+      <from>&#x9600;&#x503c;&#x5224;&#x65ad;</from>
+      <to>log_D A 9</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>N</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>log_D A 9</from>
+      <to>log end_TIME -1</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+    <hop>
+      <from>log BEGIN_TIME_REAL</from>
+      <to>log_D A 10</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>log_D A 10</from>
+      <to>SYNC_DATA</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>N</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+    <hop>
+      <from>SYNC_DATA</from>
+      <to>log_D A 11</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>log_D A 11</from>
+      <to>log end_TIME 0</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>N</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+    <hop>
+      <from>SYNC_DATA</from>
+      <to>log_D A 12</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>N</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>log_D A 12</from>
+      <to>log end_TIME -1  </to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+    <hop>
+      <from>JavaScript</from>
+      <to>&#x9600;&#x503c;&#x5224;&#x65ad;</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>&#x9600;&#x503c;&#x5224;&#x65ad;</from>
+      <to>log_D A 8</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>log_D A 8</from>
+      <to>&#x7b49;&#x5f85;</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>N</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+    <hop>
+      <from>&#x7b49;&#x5f85;</from>
+      <to>DUMMY 4</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>&#x68c0;&#x67e5;&#x76ee;&#x6807;&#x8868;</from>
+      <to>log_D A 7</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>log_D A 7</from>
+      <to>DUMMY 4</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>N</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+    <hop>
+      <from>DUMMY 4</from>
+      <to>&#x6e90;&#x8868;&#x6570;&#x636e;&#x662f;&#x5426;&#x51c6;&#x5907;&#x597d;</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+  </hops>
+  <notepads>
+  </notepads>
+
+</job>

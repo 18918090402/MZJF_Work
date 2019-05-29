@@ -1,0 +1,7 @@
+CREATE TABLE `DQ_RULE_AE` (
+  `ID` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `AE_VALUE` varchar(32) DEFAULT '' COMMENT '表达式',
+  `IS_VALID` int(1) DEFAULT '1' COMMENT '1:有效,0:无效',
+  `AE_DESC` varchar(64) DEFAULT NULL COMMENT '描述',
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='规则表达式';

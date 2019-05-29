@@ -1,0 +1,57 @@
+##
+# Host Database
+#
+# localhost is used to configure the loopback interface
+# when the system is booting.  Do not change this entry.
+##
+127.0.0.1	localhost
+127.0.0.1	MBP.local localhost localhost.localdomain
+
+255.255.255.255	broadcasthost
+::1             localhost
+172.16.2.146    BI-ETL01
+172.16.2.143 BI-APP01
+172.16.2.144 BI-APP02
+172.16.2.145 BI-APP03
+# 192.168.1.38   git.nonobank.com
+192.168.1.117   git.nonobank.com
+
+
+172.16.2.149  BI-HD01
+172.16.2.150  BI-HD02
+172.16.2.151  BI-HD03
+172.16.2.152  BI-HD04
+172.16.2.153  BI-HD05
+172.16.2.154  BI-HD06
+172.16.2.155  BI-HD07
+172.16.2.156  BI-HD08
+172.16.2.157  BI-HD09
+172.16.2.158  BI-HD10
+172.16.2.159  BI-HD11
+172.16.2.160  BI-HD12
+172.16.2.161  BI-HD13
+172.16.2.162  BI-HD14
+172.16.2.163  BI-HD15
+172.16.2.164  BI-HD16
+172.16.2.165  BI-HD17
+172.16.2.166  BI-HD18
+172.16.2.167  BI-HD19
+172.16.2.168  BI-HD20
+
+172.16.2.135 BI-HD33
+172.16.2.136 BI-HD34
+172.16.2.137 BI-HD35
+172.16.2.138 BI-HD36
+172.16.2.139 BI-HD37
+172.16.2.140 BI-HD38
+172.16.2.141 BI-HD39
+172.16.2.142 BI-HD40
+
+192.168.5.19 DEV-BI-CDH05
+192.168.5.20 DEV-BI-CDH06
+192.168.5.24 DEV-BI-CDH07
+192.168.5.25 DEV-BI-CDH08
+
+23.225.155.182 www.97jiasu.top
+61.191.55.72 zgfuncs.92jiasu.top
+

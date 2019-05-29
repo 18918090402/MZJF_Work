@@ -1,0 +1,15 @@
+﻿drop table if exists DMT_BF.NONO_INVEST_SNAPSHOT;
+create table if not exists DMT_BF.NONO_INVEST_SNAPSHOT
+(
+  USER_ID bigint COMMENT '用户ID',
+  INVEST_AMT DECIMAL(38,10) COMMENT '当日总投资金额',
+  DW_CREATE_BY string COMMENT '系统字段-创建者',
+  DW_CREATE_TIME string COMMENT '系统字段-创建时间',
+  DW_UPDATE_BY string COMMENT '系统字段-修改者',
+  DW_UPDATE_TIME string COMMENT '系统字段-修改时间')
+COMMENT '诺诺用户日投资快照表'
+PARTITIONED BY (STAT_DATE STRING COMMENT '数据所属日期')
+ROW FORMAT DELIMITED
+  NULL DEFINED AS ''
+STORED AS PARQUET 
+TBLPROPERTIES ("parquet.compression"="SNAPPY");

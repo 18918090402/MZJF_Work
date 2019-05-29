@@ -1,0 +1,14 @@
+DROP TABLE IF EXISTS IDW.DIM_USER_CONTACT_LIST;
+
+CREATE TABLE IF NOT EXISTS IDW.DIM_USER_CONTACT_LIST
+(
+   USER_ID              BIGINT COMMENT '代理键（主键）',
+   CONTACTS_NAME        STRING COMMENT '标签名（英文字段名）',
+   PHONE_NO             STRING COMMENT '标签名中文',  
+   DW_CREATE_BY         STRING COMMENT '系统字段-创建者',
+   DW_CREATE_TIME       STRING COMMENT '系统字段-创建时间',
+   DW_UPDATE_BY         STRING COMMENT '系统字段-修改者',
+   DW_UPDATE_TIME       STRING COMMENT '系统字段-修改时间'
+) COMMENT '用户通讯录联系人维表'
+STORED AS PARQUET TBLPROPERTIES ("parquet.compression"="SNAPPY");
+;

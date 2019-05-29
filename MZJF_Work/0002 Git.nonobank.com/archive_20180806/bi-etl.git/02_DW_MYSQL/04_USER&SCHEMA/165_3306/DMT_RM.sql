@@ -1,0 +1,15 @@
+
+USE mysql;
+
+--  创建用户
+CREATE USER  DMT_RM   IDENTIFIED BY 'DMT_RM_MZ_2016';
+
+-- 查看用户权限
+SHOW GRANTS FOR DMT_RM;
+
+-- 赋予权限
+GRANT ALL PRIVILEGES ON DMT_RM.* TO DMT_RM;
+GRANT ALL PRIVILEGES ON TMP.* TO DMT_RM;
+
+-- 权限生效
+FLUSH  PRIVILEGES ; -- 注意：修改完权限以后 一定要刷新服务，或者重启服务，刷新服务用：FLUSH PRIVILEGES。

@@ -1,0 +1,26 @@
+set mapreduce.job.name = DMT_RM_FACT_MLD_HOR_STATIC;
+set mapreduce.job.queuename = etl-dw;
+set hive.exec.parallel=true;
+set hive.groupby.skewindata=true;
+
+INSERT OVERWRITE TABLE  DMT_RM.FACT_MLD_HOR_STATIC
+SELECT 
+  T1.ORDER_ID,T1.ORDER_NO,T1.NONO_BOID AS APPLY_NO,T1.USER_ID,T1.NONO_USERID,T1.ORDER_CREATE_DATE,T1.ORDER_STATUS,T1.APPLY_STAUS
+  ,MAX(IF(T2.CHANNEL_CODE='ZHIMA' AND T2.COLUMN_NAME='zmScore',T2.value,NULL)) AS ZM_SCORE --芝麻分
+  ,MAX(IF(T2.CHANNEL_CODE='ZHIMA_IVS' AND T2.COLUMN_NAME='ivsScore',T2.value,NULL)) AS zm_ivs_score --芝麻IVS分
+  ,MAX(IF(T2.CHANNEL_CODE='ZHIMA_FOCUS' AND T2.COLUMN_NAME='matched',T2.value,NULL)) AS zm_hygzlist_matched --芝麻行业关注名单
+  ,MAX(IF(T2.CHANNEL_CODE='TONGDUN' AND T2.COLUMN_NAME='finalScore',T2.value,NULL)) AS td_finalScore  --同盾,风险分数 
+  ,MAX(IF(T2.CHANNEL_CODE='TONGDUN' AND T2.COLUMN_NAME='finalDecision',T2.value,NULL)) AS td_finalDecision  --同盾,风险结果 
+  ,MAX(IF(T2.CHANNEL_CODE='TONGDUN' AND T2.COLUMN_NAME='7天内申请人在多个平台申请借款',T2.value,NULL)) AS td_mul_invest_7d
+  ,MAX(IF(T2.CHANNEL_CODE='TONGDUN' AND T2.COLUMN_NAME='1个月内申请人在多个平台申请借款',T2.value,NULL)) AS td_mul_invest_1m
+  ,MAX(IF(T2.CHANNEL_CODE='TONGDUN' AND T2.COLUMN_NAME='3个月内申请人在多个平台申请借款',T2.value,NULL)) AS td_mul_invest_3m
+  ,MAX(IF(T2.CHANNEL_CODE='TONGDUN' AND T2.COLUMN_NAME='6个月内申请人在多个平台申请借款',T2.value,NULL)) AS td_mul_invest_6m
+  ,MAX(IF(T2.CHANNEL_CODE='YITU_COMPARE' AND T2.COLUMN_NAME='pairVerifySimilarity',T2.value,NULL)) AS face_score --水纹照与活体识别照对比分数
+  ,MAX(IF(T2.CHANNEL_CODE='TXSK_ONLINETIME' and t2.column_name='onlineTime',T2.value,NULL)) AS tx_online_duration --天行数科-在网时长
+  ,'{TASK_ID}' AS DW_CREATE_BY
+  ,FROM_UNIXTIME(UNIX_TIMESTAMP(), 'YYYY-MM-dd HH:MM:SS') AS DW_CREATE_TIME
+  ,'{TASK_ID}' AS DW_UPDATE_BY
+  ,FROM_UNIXTIME(UNIX_TIMESTAMP(), 'YYYY-MM-dd HH:MM:SS') AS DW_UPDATE_TIME
+FROM IDW.FACT_MLD_ORDER_CREDIT T1 LEFT OUTER JOIN IDW.FACT_HOR_DATA T2
+ON T1.dh_uuid=t2.uuid
+GROUP BY T1.ORDER_ID,T1.ORDER_NO,T1.NONO_BOID,T1.USER_ID,T1.NONO_USERID,T1.ORDER_CREATE_DATE,T1.ORDER_STATUS,T1.APPLY_STAUS;

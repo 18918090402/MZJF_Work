@@ -1,0 +1,105 @@
+set mapreduce.job.name=DMT_RM_FACT_APPROVAL_MXDMY_DATA_02_01; 
+set mapreduce.job.queuename = etl-dw;  
+
+set hive.exec.parallel=true ;
+set hive.groupby.skewindata = true ;
+set hive.map.aggr = true ; 
+
+set hive.enforce.bucketing = true;
+
+set hive.exec.dynamic.partition=true;
+set hive.exec.dynamic.partition.mode=nonstrict; 
+set hive.exec.max.dynamic.partitions.pernode=100000000;
+set hive.exec.max.dynamic.partitions=100000000;
+set hive.exec.max.created.files=100000000;
+
+
+
+
+INSERT OVERWRITE TABLE dmt_rm.FACT_APPROVAL_MXDMY_DATA_02 partition (STAT_DATE)
+SELECT '-1' as order_no,bo.id apply_no,a.am_name audit_name,p.p_name product,bo.publish_time  process_begin_time,"提交申请" process_name,NULL process_end_time
+,'SYS' AS DW_CREATE_BY
+,FROM_UNIXTIME(UNIX_TIMESTAMP(),'yyyy-MM-dd HH:mm:ss') AS DW_CREATE_TIME
+,'SYS' AS DW_UPDATE_BY
+,FROM_UNIXTIME(UNIX_TIMESTAMP(),'yyyy-MM-dd HH:mm:ss') AS DW_UPDATE_TIME
+,FROM_UNIXTIME(UNIX_TIMESTAMP() -1*24*60*60,'yyyy-MM-dd') AS STAT_DATE
+FROM ods.t_borrows_hist bo 
+LEFT JOIN ods.t_products_hist p ON p.id=bo.p_id
+LEFT JOIN ods.t_admin_work_remark_hist awr ON bo.id=awr.bo_id
+LEFT JOIN ods.t_admin_hist a ON awr.am_id=a.id
+WHERE 1=1
+AND bo.publish_time>=date_sub(CURRENT_DATE(),10)
+
+UNION ALL
+SELECT '-1' as order_no,ba.bo_id apply_no,a.am_name audit_name,p.p_name product,ba.create_time process_begin_time,"提交视频" process_name,NULL process_end_time
+,'SYS' AS DW_CREATE_BY
+,FROM_UNIXTIME(UNIX_TIMESTAMP(),'yyyy-MM-dd HH:mm:ss') AS DW_CREATE_TIME
+,'SYS' AS DW_UPDATE_BY
+,FROM_UNIXTIME(UNIX_TIMESTAMP(),'yyyy-MM-dd HH:mm:ss') AS DW_UPDATE_TIME
+,FROM_UNIXTIME(UNIX_TIMESTAMP() -1*24*60*60,'yyyy-MM-dd') AS STAT_DATE 
+FROM ods.t_borrows_archive_hist ba  
+JOIN ods.t_borrows_hist bo  ON bo.id=ba.bo_id
+LEFT JOIN ods.t_products_hist p ON p.id=bo.p_id
+LEFT JOIN ods.t_admin_work_remark_hist awr ON bo.id=awr.bo_id
+LEFT JOIN ods.t_admin_hist a ON awr.am_id=a.id
+WHERE 1=1
+AND ba.create_time>=date_sub(CURRENT_DATE(),10)
+
+UNION ALL
+SELECT '-1' as order_no,ba.bo_id apply_no,a.am_name audit_name,p.p_name product,am_audit_time process_begin_time,"初审分配" process_name,NULL process_end_time
+,'SYS' AS DW_CREATE_BY
+,FROM_UNIXTIME(UNIX_TIMESTAMP(),'yyyy-MM-dd HH:mm:ss') AS DW_CREATE_TIME
+,'SYS' AS DW_UPDATE_BY
+,FROM_UNIXTIME(UNIX_TIMESTAMP(),'yyyy-MM-dd HH:mm:ss') AS DW_UPDATE_TIME
+,FROM_UNIXTIME(UNIX_TIMESTAMP() -1*24*60*60,'yyyy-MM-dd') AS STAT_DATE 
+FROM ods.t_borrows_archive_hist ba 
+JOIN ods.t_borrows_hist bo  ON bo.id=ba.bo_id
+LEFT JOIN ods.t_products_hist p ON p.id=bo.p_id
+LEFT JOIN ods.t_admin_work_remark_hist awr ON bo.id=awr.bo_id
+LEFT JOIN ods.t_admin_hist a ON awr.am_id=a.id
+WHERE 1=1
+AND ba.create_time>=date_sub(CURRENT_DATE(),13)
+AND am_audit_time>=date_sub(CURRENT_DATE(),10)
+
+UNION ALL
+SELECT '-1' as order_no,bo.id apply_no,a.am_name audit_name,p.p_name product,awr.create_time process_begin_time,awr.title process_name,NULL process_end_time
+,'SYS' AS DW_CREATE_BY
+,FROM_UNIXTIME(UNIX_TIMESTAMP(),'yyyy-MM-dd HH:mm:ss') AS DW_CREATE_TIME
+,'SYS' AS DW_UPDATE_BY
+,FROM_UNIXTIME(UNIX_TIMESTAMP(),'yyyy-MM-dd HH:mm:ss') AS DW_UPDATE_TIME
+,FROM_UNIXTIME(UNIX_TIMESTAMP() -1*24*60*60,'yyyy-MM-dd') AS STAT_DATE 
+FROM ods.t_admin_work_remark_hist awr
+JOIN ods.t_borrows_hist bo  ON bo.id=awr.bo_id
+LEFT JOIN ods.t_products_hist p ON p.id=bo.p_id
+LEFT JOIN ods.t_admin_hist a ON awr.am_id=a.id
+WHERE 1=1
+AND awr.create_time>=date_sub(CURRENT_DATE(),10)
+
+UNION ALL
+SELECT '-1' as order_no,bo.id apply_no,a.am_name audit_name,p.p_name product,bo.bo_agree_time  process_begin_time,"签约完成" process_name,NULL process_end_time
+,'SYS' AS DW_CREATE_BY
+,FROM_UNIXTIME(UNIX_TIMESTAMP(),'yyyy-MM-dd HH:mm:ss') AS DW_CREATE_TIME
+,'SYS' AS DW_UPDATE_BY
+,FROM_UNIXTIME(UNIX_TIMESTAMP(),'yyyy-MM-dd HH:mm:ss') AS DW_UPDATE_TIME
+,FROM_UNIXTIME(UNIX_TIMESTAMP() -1*24*60*60,'yyyy-MM-dd') AS STAT_DATE 
+FROM ods.t_borrows_hist bo 
+LEFT JOIN ods.t_products_hist p ON p.id=bo.p_id
+LEFT JOIN ods.t_admin_work_remark_hist awr ON bo.id=awr.bo_id
+LEFT JOIN ods.t_admin_hist a ON awr.am_id=a.id
+WHERE 1=1
+AND bo.bo_agree_time>=date_sub(CURRENT_DATE(),10)
+UNION ALL
+SELECT '-1' as order_no,bo.id apply_no,a.am_name audit_name,p.p_name product,bo.bo_agree_time  process_begin_time,"拒绝" process_name,NULL process_end_time
+,'SYS' AS DW_CREATE_BY
+,FROM_UNIXTIME(UNIX_TIMESTAMP(),'yyyy-MM-dd HH:mm:ss') AS DW_CREATE_TIME
+,'SYS' AS DW_UPDATE_BY
+,FROM_UNIXTIME(UNIX_TIMESTAMP(),'yyyy-MM-dd HH:mm:ss') AS DW_UPDATE_TIME
+,FROM_UNIXTIME(UNIX_TIMESTAMP() -1*24*60*60,'yyyy-MM-dd') AS STAT_DATE 
+FROM ods.t_borrows_hist bo 
+LEFT JOIN ods.t_products_hist p ON p.id=bo.p_id
+LEFT JOIN ods.t_admin_work_remark_hist awr ON bo.id=awr.bo_id
+LEFT JOIN ods.t_admin_hist a ON awr.am_id=a.id
+WHERE 1=1
+and bo.bo_is_success=2
+AND bo.bo_agree_time>=date_sub(CURRENT_DATE(),10)
+;

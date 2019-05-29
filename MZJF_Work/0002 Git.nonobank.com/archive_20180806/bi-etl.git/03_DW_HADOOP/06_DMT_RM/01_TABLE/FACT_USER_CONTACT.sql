@@ -1,0 +1,22 @@
+DROP TABLE IF EXISTS DMT_RM.FACT_USER_CONTACT;
+CREATE TABLE IF NOT EXISTS DMT_RM.FACT_USER_CONTACT
+(
+   USER_ID              BIGINT COMMENT '代理键（主键）',
+   PHONE_COUNSELLOR_NO_FLAG INT COMMENT '辅导员是否在通讯里',
+   PHONE_PARENTS_NO_FLAG    INT COMMENT '父母亲是否在通讯里', 
+   PHONE_CONTACT1_NO_FLAG   INT COMMENT '好友1是否在通讯里',
+   PHONE_CONTACT2_NO_FLAG   INT COMMENT '好友2是否在通讯里',
+   PHONE_CONTACT3_NO_FLAG   INT COMMENT '好友3是否在通讯里',
+   PHONE_NO_CNT             INT COMMENT '号码数',
+   BO_USER_CNT              INT COMMENT '好友申请数',
+   BO_CNT                   INT COMMENT '好友申请标的数',
+   BO_S_CNT                 INT COMMENT '好友申请，且进件成功数',
+   BO_OVER_DUE_CNT          INT COMMENT '好友申请，且坏账数',
+   COMM_PHONE_NO_CNT        INT COMMENT '共有的电话号码数',
+   DW_CREATE_BY         STRING COMMENT '系统字段-创建者',
+   DW_CREATE_TIME       STRING COMMENT '系统字段-创建时间',
+   DW_UPDATE_BY         STRING COMMENT '系统字段-修改者',
+   DW_UPDATE_TIME       STRING COMMENT '系统字段-修改时间'
+) COMMENT '用户通讯录'
+STORED AS PARQUET TBLPROPERTIES ("parquet.compression"="SNAPPY");
+;

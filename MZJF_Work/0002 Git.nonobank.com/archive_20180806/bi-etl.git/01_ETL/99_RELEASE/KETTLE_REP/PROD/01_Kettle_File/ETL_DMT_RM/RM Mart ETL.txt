@@ -1,0 +1,142 @@
+###FACT_APPLY
+
+SELECT MAX(max_time) INTO @t FROM risk.xcw_borrows_concat;
+DELETE FROM risk.xcw_borrows_concat WHERE max_time>=DATE_ADD(@t,INTERVAL -7 DAY);
+INSERT INTO  risk.xcw_borrows_concat
+SELECT bdc.user_id
+,MAX(IF(bdc.groupkwd='辅导员' AND kind=1,bdc.value,NULL)) 辅导员
+,MAX(IF(bdc.groupkwd='辅导员' AND kind=2,bdc.value,NULL)) 辅导员手机
+,MAX(IF(bdc.groupkwd='父母' AND kind=1,bdc.value,NULL)) 父母
+,MAX(IF(bdc.groupkwd='父母' AND kind=2,bdc.value,NULL)) 父母手机
+,MAX(IF(bdc.groupkwd='好友1' AND kind=1,bdc.value,NULL)) 好友1
+,MAX(IF(bdc.groupkwd='好友1' AND kind=2,bdc.value,NULL)) 好友1手机
+,MAX(IF(bdc.groupkwd='好友2' AND kind=1,bdc.value,NULL)) 好友2
+,MAX(IF(bdc.groupkwd='好友2' AND kind=2,bdc.value,NULL)) 好友2手机
+,MAX(IF(bdc.groupkwd='好友3' AND kind=1,bdc.value,NULL)) 好友3
+,MAX(IF(bdc.groupkwd='好友3' AND kind=2,bdc.value,NULL)) 好友3手机
+,MAX(IF(bdc.groupkwd='辅导员' AND kind=2,bdc.call_state,NULL)) 辅导员手机状态
+,MAX(IF(bdc.groupkwd='父母' AND kind=2,bdc.call_state,NULL)) 父母手机状态
+,MAX(IF(bdc.groupkwd='好友1' AND kind=2,bdc.call_state,NULL)) 好友1手机状态
+,MAX(IF(bdc.groupkwd='好友2' AND kind=2,bdc.call_state,NULL)) 好友2手机状态
+,MAX(IF(bdc.groupkwd='好友3' AND kind=2,bdc.call_state,NULL)) 好友3手机状态
+
+,MAX(bdc.create_time) max_time
+,NOW() create_time
+FROM db_nono.borrows_dunning_contact bdc 
+LEFT JOIN risk.xcw_borrows_concat bc ON bc.user_id=bdc.user_id
+WHERE 1=1
+AND bc.user_id IS NULL
+AND bdc.groupkwd IN('辅导员','父母','好友1','好友2','好友3')
+#and bo.user_id=411098
+GROUP BY 1
+;
+
+DELETE FROM FACT_APPLY;
+SET @t="2010-07-01";SET @tt=CURDATE();
+CALL SP_FACT_APPLY(@t,@tt);
+
+
+
+
+
+####FACT_APPROVAL
+
+SELECT DATE_ADD(DATE(MAX(process_begin_time)),INTERVAL -3 DAY) INTO @t
+FROM FACT_APPROVAL
+;
+SET @tt=CURDATE();
+CALL SP_FACT_APPROVAL(@t,@tt);
+
+
+
+####贷后静态表 每月一个表
+SELECT  MAX(remain_date) INTO @t FROM DW_Borrows_Month_Remain mr   ;
+SELECT  MIN(DATEDIFF(mr.create_time,remain_date)) INTO @tt FROM DW_Borrows_Month_Remain mr WHERE remain_date= @t  ;
+SELECT CASE WHEN @tt>=1 THEN DATE_ADD(@t,INTERVAL 1 MONTH) WHEN @tt=0 THEN @t ELSE NULL END INTO @ttt;
+CALL risk.SP_DW_Borrows_Month_Remain(@ttt,CURDATE());
+
+DELETE FROM FACT_LOAN_AFTER_STATIC_MONTHLY
+WHERE FILE_DATE=DATE_ADD(CURDATE(),INTERVAL -DAYOFMONTH(CURDATE()) +1 DAY);
+
+INSERT INTO FACT_LOAN_AFTER_STATIC_MONTHLY
+SELECT mr.bo_id APPLY_NO
+,DATE(bo.bo_agree_time)  DISBURSED_DATE
+,bo.bo_finish_price DISBURSED_AMT 
+,bo.bo_expect TERM
+,bo.bo_expect_cat TERM_UNIT
+,bo.bo_rate INTEREST_RATE
+,CASE 
+WHEN mr.unrepay_cnt=0 THEN "closed" 
+WHEN unrepay_overdue_cnt>0 THEN "overdue" 
+ELSE "current" END STATUS
+,mr.unrepay_max_overdue_day OVERDUE_DAY
+,max_overdue_day  OVERDUE_DAY_MAX
+,unrepay_overdue_cnt OVERDUE_TERM
+,mr.br_overdue_terms OVERDUE_TERM_MAX
+,NULL OVERDUE_AMT
+,NULL  OVERDUE_AMT_MAX
+,unrepay_b OUTSTANDING_AMT
+,repay_cnt TERM_PAID
+,mr.remain_date  FILE_DATE
+,unrepay_overdue_b OVERDUE_PRINCIPAL_AMT
+,br_price_b_lc  MAX_OVERDUE_PRINCIPAL_AMT
+FROM risk.DW_Borrows_Month_Remain mr
+JOIN db_nono.borrows bo ON bo.id=mr.bo_id
+WHERE 1=1
+AND mr.remain_date=DATE_ADD(CURDATE(),INTERVAL -DAYOFMONTH(CURDATE()) +1 DAY)
+AND bo.bo_agree_time<mr.remain_date
+;
+
+
+
+####贷后动态表  全量导入，之后每月追加
+DELETE FROM FACT_LOAN_AFTER_DYNAMIC_MONTHLY
+WHERE remain_date=DATE_ADD(CURDATE(),INTERVAL -DAYOFMONTH(CURDATE()) +1 DAY);
+
+INSERT INTO FACT_LOAN_AFTER_DYNAMIC_MONTHLY
+SELECT mr.bo_id APPLY_NO
+,DATE(bo.bo_agree_time)  DISBURSED_DATE
+,bo.bo_finish_price DISBURSED_AMT
+,bo.bo_expect TERM
+,bo.bo_expect_cat TERM_UNIT
+,bo.bo_rate INTEREST_RATE
+,CASE WHEN mr.unrepay_cnt=0 THEN "closed" WHEN unrepay_overdue_cnt>0 THEN "overdue" ELSE "current" END STATUS
+,mr.unrepay_max_overdue_day OVERDUE_DAY
+,unrepay_overdue_cnt OVERDUE_TERM
+,unrepay_b OUTSTANDING_AMT
+,mr.remain_date  FILE_DATE
+FROM risk.DW_Borrows_Month_Remain mr
+JOIN db_nono.borrows bo ON bo.id=mr.bo_id
+WHERE 1=1
+AND mr.remain_date=DATE_ADD(CURDATE(),INTERVAL -DAYOFMONTH(CURDATE()) +1 DAY)
+AND bo.bo_agree_time<mr.remain_date
+
+-- -----------------------------------------------------------------------------
+SELECT COUNT(1) FROM FACT_APPLY
+
+SELECT COUNT(1) FROM FACT_APPROVAL
+SELECT * FROM  risk.TMP_FACT_APPLY_DATE
+#---------------------------
+SELECT DATE_ADD(DATE(MAX(process_begin_time)),INTERVAL -3 DAY) INTO @t
+FROM FACT_APPROVAL
+;
+SET @tt=CURDATE();
+CALL SP_FACT_APPROVAL(@t,@tt);
+
+SET @t="2010-07-01";SET @tt=CURDATE();
+CALL SP_TMP_FACT_APPLY(@t,@tt);
+#---------------------------
+
+SHOW PROCESSLIST;
+
+USE information_schema;
+SELECT * FROM PROCESSLIST WHERE info IS NOT NULL;
+
+
+SELECT 
+	STATUS	 
+	FROM 
+	risk.FACT_LOAN_AFTER_STATIC_MONTHLY 
+	GROUP BY 1
+	LIMIT 0, 50;
+

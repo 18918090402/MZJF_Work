@@ -1,0 +1,15 @@
+## index_system:daily
+00 07  * * *    /webapps/index-system/sh/is_run_crontab.sh  DAILY nono,caishen,dw_slave,hive,impala,mkt,archive 
+## index_system:fix hourly/30MIN/10min gap
+20 06  * * *       /webapps/index-system/sh/is_run_fix.sh
+## index_system:1MIN	
+# 30  */1  * * *     /webapps/index-system/sh/is_run_crontab.sh 1MIN	
+## index_system:10MIN
+*/10 06-23   * * *    /webapps/index-system/sh/is_run_crontab.sh 10MIN hive,impala	
+*/10 *  * * *         /webapps/index-system/sh/is_run_crontab.sh 10MIN nono,caishen,dw_slave,mkt,archive	
+## index_system:30MIN
+0,30  06-23/1    * * *   /webapps/index-system/sh/is_run_crontab.sh 30MIN hive,impala	
+0,30  */1    * * *       /webapps/index-system/sh/is_run_crontab.sh 30MIN nono,caishen,dw_slave,mkt,archive	
+## index_system:HOURLY
+01   06-23/1    * * *   /webapps/index-system/sh/is_run_crontab.sh HOURLY hive,impala	
+01   */1    * * *       /webapps/index-system/sh/is_run_crontab.sh HOURLY nono,caishen,dw_slave,mkt,archive

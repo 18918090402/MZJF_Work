@@ -1,0 +1,50 @@
+drop table if exists idw.FACT_MAIYA_USER_INFO;
+create table if not exists idw.FACT_MAIYA_USER_INFO
+(
+   DW_CREATE_BY         string comment '系统字段-创建者',
+   DW_CREATE_TIME       string comment '系统字段-创建时间',
+   DW_UPDATE_BY         string comment '系统字段-修改者',
+   DW_UPDATE_TIME       string comment '系统字段-修改时间',
+   MAIYA_USER_ID        int comment '麦芽用户ID',
+   USER_ID              bigint comment '用户ID',
+   USERNAME             string comment '用户名',
+   MOBILE               string comment '电话',
+   HONOR_LEVEL          string comment '信用等级',
+   SALARY               int comment '薪水',
+   IS_QIZHA             int comment '是否欺诈',
+   ONLINE_ACCOUNT_NO    string comment '徽商电子账户',
+   NAME                 string comment '姓名',
+   SEX                  int comment '性别',
+   IDCARD_ADDRESS       string comment '身份证地址',
+   IDCARD               string comment '身份证',
+   ADDRESS              string comment '地址',
+   USER_TYPE            int comment '用户身份',
+   PROVINCE_CODE        string comment '省编码',
+   PROVINCE_NAME        string comment '省名称',
+   CITY_CODE            string comment '市编码',
+   CITY_NAME            string comment '市名称',
+   COUNTY_CODE          string comment '地区编码',
+   COUNTY_NAME          string comment '地区名称',
+   WORK_TYPE            int comment '工作行业',
+   WORK_TYPE_NAME       string comment '工作行业名称',
+   WORK_POSITION        int comment '工作职位',
+   WORK_POSITION_NAME   string comment '职位名称',
+   COMPANY_NAME         string comment '公司名称',
+   ACADEMIC             int comment '学历',
+   ACADEMIC_NAME        string comment '学历名称',
+   FAMILY_USER          string comment '直系亲属姓名',
+   FAMILY_USER_MOBILE   string comment '亲属电话',
+   EMAIL                string comment '电子邮件',
+   USE_SOURCE           int comment '用户来源',
+   NONO_OLD_USER        string comment '是否诺诺老用户',
+   ENTRY_YEAR           string comment '入学年份',
+   SPOUSE_NAME          string comment '配偶姓名',
+   SPOUSE_IDCARD        string comment '配偶身份证号',
+   SPOUSE_MOBILE        string comment '配偶手机号',
+   FDD_AUTH_STATUS      int comment '是否认证法大大',
+   MOBILE_ADDRESS       string comment '手机归属地')
+COMMENT '麦芽用户信息宽表'
+ROW FORMAT DELIMITED
+  NULL DEFINED AS ''
+STORED AS PARQUET 
+TBLPROPERTIES ("parquet.compression"="SNAPPY");

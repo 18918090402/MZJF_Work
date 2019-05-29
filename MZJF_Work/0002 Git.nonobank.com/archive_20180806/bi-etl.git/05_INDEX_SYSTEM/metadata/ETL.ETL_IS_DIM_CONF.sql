@@ -1,0 +1,107 @@
+# ************************************************************
+# Sequel Pro SQL dump
+# Version 4541
+#
+# http://www.sequelpro.com/
+# https://github.com/sequelpro/sequelpro
+#
+# Host: 172.16.2.148 (MySQL 5.7.17-0ubuntu0.16.04.1-log)
+# Database: ETL
+# Generation Time: 2017-10-25 01:47:22 +0000
+# ************************************************************
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+
+# Dump of table ETL_IS_DIM_CONF
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `ETL_IS_DIM_CONF`;
+
+CREATE TABLE `ETL_IS_DIM_CONF` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT COMMENT 'PK',
+  `INDEX_ID` int(11) NOT NULL COMMENT '指标ID',
+  `DIM_SEQ` int(11) NOT NULL COMMENT '维度序号(1-10)',
+  `DIM_NM` varchar(64) NOT NULL COMMENT '维度名称',
+  `DIM_COL` varchar(64) NOT NULL COMMENT '维度字段',
+  `IS_VALID` char(1) DEFAULT '1' COMMENT '是否生效:1-生效，0-失效',
+  `CREATE_TIME` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `UPDATE_TIME` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `CREATE_BY` varchar(64) DEFAULT 'SYS' COMMENT '创建人',
+  `UPDATE_BY` varchar(64) DEFAULT 'SYS' COMMENT '更新人',
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `INDEX_ID` (`INDEX_ID`,`DIM_NM`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='度量配置表';
+
+LOCK TABLES `ETL_IS_DIM_CONF` WRITE;
+/*!40000 ALTER TABLE `ETL_IS_DIM_CONF` DISABLE KEYS */;
+
+INSERT INTO `ETL_IS_DIM_CONF` (`ID`, `INDEX_ID`, `DIM_SEQ`, `DIM_NM`, `DIM_COL`, `IS_VALID`, `CREATE_TIME`, `UPDATE_TIME`, `CREATE_BY`, `UPDATE_BY`)
+VALUES
+	(1,271,1,'渠道','channel','1','2017-01-09 15:03:39','2017-01-09 15:03:39','SYS',NULL),
+	(2,271,2,'计划','plan','1','2017-01-09 15:03:39','2017-01-09 15:03:39','SYS',NULL),
+	(3,271,3,'单元','unit','1','2017-01-09 15:03:39','2017-01-09 15:03:39','SYS',NULL),
+	(4,271,4,'明细','detail','1','2017-01-09 15:03:39','2017-01-09 15:03:39','SYS',NULL),
+	(5,272,1,'渠道','channel','1','2017-01-09 15:33:57','2017-01-09 15:33:57','SYS',NULL),
+	(6,272,2,'计划','plan','1','2017-01-09 15:33:57','2017-01-09 15:33:57','SYS',NULL),
+	(7,272,3,'单元','unit','1','2017-01-09 15:33:57','2017-01-09 15:33:57','SYS',NULL),
+	(8,272,4,'明细','detail','1','2017-01-09 15:33:57','2017-01-09 15:33:57','SYS',NULL),
+	(9,273,1,'渠道','channel','1','2017-01-09 15:41:13','2017-01-09 15:41:13','SYS',NULL),
+	(10,273,2,'计划','plan','1','2017-01-09 15:41:13','2017-01-09 15:41:13','SYS',NULL),
+	(11,273,3,'单元','unit','1','2017-01-09 15:41:13','2017-01-09 15:41:13','SYS',NULL),
+	(12,273,4,'明细','detail','1','2017-01-09 15:41:14','2017-01-09 15:41:14','SYS',NULL),
+	(13,276,1,'渠道','channel','1','2017-01-09 17:03:58','2017-01-09 17:03:58','SYS',NULL),
+	(14,276,2,'计划','plan','1','2017-01-09 17:03:58','2017-01-09 17:03:58','SYS',NULL),
+	(15,276,3,'单元','unit','1','2017-01-09 17:03:59','2017-01-09 17:03:59','SYS',NULL),
+	(16,276,4,'明细','detail','1','2017-01-09 17:03:59','2017-01-09 17:03:59','SYS',NULL),
+	(17,277,1,'渠道',' channel','1','2017-01-09 17:06:10','2017-01-09 17:06:10','SYS',NULL),
+	(18,277,2,'计划','plan','1','2017-01-09 17:06:10','2017-01-09 17:06:10','SYS',NULL),
+	(19,277,3,'单元','unit','1','2017-01-09 17:06:10','2017-01-09 17:06:10','SYS',NULL),
+	(20,277,4,'明细','detail','1','2017-01-09 17:06:10','2017-01-09 17:06:10','SYS',NULL),
+	(21,278,1,'渠道','channel','1','2017-01-09 17:07:29','2017-01-09 17:07:29','SYS',NULL),
+	(22,278,2,'计划','plan','1','2017-01-09 17:07:30','2017-01-09 17:07:30','SYS',NULL),
+	(23,278,3,'单元','unit','1','2017-01-09 17:07:30','2017-01-09 17:07:30','SYS',NULL),
+	(24,278,4,'明细','detail','1','2017-01-09 17:07:30','2017-01-09 17:07:30','SYS',NULL),
+	(25,279,1,'渠道','channel','1','2017-01-09 17:08:46','2017-01-09 17:08:46','SYS',NULL),
+	(26,279,2,'计划','plan','1','2017-01-09 17:08:46','2017-01-09 17:08:46','SYS',NULL),
+	(27,279,3,'单元','unit','1','2017-01-09 17:08:46','2017-01-09 17:08:46','SYS',NULL),
+	(28,279,4,'明细','detail','1','2017-01-09 17:08:46','2017-01-09 17:08:46','SYS',NULL),
+	(29,280,1,'渠道','channel','1','2017-01-09 17:10:28','2017-01-09 17:10:28','SYS',NULL),
+	(30,280,2,'计划','plan','1','2017-01-09 17:10:28','2017-01-09 17:10:28','SYS',NULL),
+	(31,280,3,'单元','unit','1','2017-01-09 17:10:28','2017-01-09 17:10:28','SYS',NULL),
+	(32,280,4,'明细','detail','1','2017-01-09 17:10:28','2017-01-09 17:10:28','SYS',NULL),
+	(33,281,1,'渠道','channel','1','2017-01-09 17:11:27','2017-01-09 17:11:27','SYS',NULL),
+	(34,281,2,'计划','plan','1','2017-01-09 17:11:27','2017-01-09 17:11:27','SYS',NULL),
+	(35,281,3,'单元','unit','1','2017-01-09 17:11:27','2017-01-09 17:11:27','SYS',NULL),
+	(36,281,4,'明细','detail','1','2017-01-09 17:11:28','2017-01-09 17:11:28','SYS',NULL),
+	(37,282,3,'单元','unit','1','2017-01-09 17:15:13','2017-01-09 17:15:13','SYS','SYS'),
+	(38,282,4,'明细','detail','1','2017-01-09 17:15:13','2017-01-09 17:15:13','SYS','SYS'),
+	(39,282,1,'渠道','channel','1','2017-01-09 17:15:13','2017-01-09 17:15:13','SYS','SYS'),
+	(40,282,2,'计划','plan','1','2017-01-09 17:15:13','2017-01-09 17:15:13','SYS','SYS'),
+	(44,283,3,'单元','unit','1','2017-01-09 17:15:20','2017-01-09 17:15:20','SYS','SYS'),
+	(45,283,4,'明细','detail','1','2017-01-09 17:15:20','2017-01-09 17:15:20','SYS','SYS'),
+	(46,283,1,'渠道','channel','1','2017-01-09 17:15:20','2017-01-09 17:15:20','SYS','SYS'),
+	(47,283,2,'计划','plan','1','2017-01-09 17:15:20','2017-01-09 17:15:20','SYS','SYS'),
+	(51,284,3,'单元','unit','1','2017-01-09 17:15:29','2017-01-09 17:15:29','SYS','SYS'),
+	(52,284,4,'明细','detail','1','2017-01-09 17:15:29','2017-01-09 17:15:29','SYS','SYS'),
+	(53,284,1,'渠道','channel','1','2017-01-09 17:15:29','2017-01-09 17:15:29','SYS','SYS'),
+	(54,284,2,'计划','plan','1','2017-01-09 17:15:29','2017-01-09 17:15:29','SYS','SYS');
+
+/*!40000 ALTER TABLE `ETL_IS_DIM_CONF` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

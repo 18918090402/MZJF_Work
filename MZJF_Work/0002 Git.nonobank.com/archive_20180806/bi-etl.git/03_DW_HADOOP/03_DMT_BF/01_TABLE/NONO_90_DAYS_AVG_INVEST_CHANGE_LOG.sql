@@ -1,0 +1,17 @@
+﻿drop table if exists DMT_BF.NONO_90_DAYS_AVG_INVEST_CHANGE_LOG;
+create table if not exists DMT_BF.NONO_90_DAYS_AVG_INVEST_CHANGE_LOG
+(
+  USER_ID bigint COMMENT '用户ID',
+  INVEST_AMT DECIMAL(38,10) COMMENT '当日总投资金额',
+  AVG_INVEST_AMT_90 DECIMAL(38,10) COMMENT '90天平均投资金额',
+  TYPE int COMMENT '类型 0:金额变更 1:注册',
+  DW_CREATE_BY string COMMENT '系统字段-创建者',
+  DW_CREATE_TIME string COMMENT '系统字段-创建时间',
+  DW_UPDATE_BY string COMMENT '系统字段-修改者',
+  DW_UPDATE_TIME string COMMENT '系统字段-修改时间')
+COMMENT '诺诺用户90天平均投资变更日志表'
+PARTITIONED BY (STAT_DATE STRING COMMENT '数据所属日期')
+ROW FORMAT DELIMITED
+  NULL DEFINED AS ''
+STORED AS PARQUET 
+TBLPROPERTIES ("parquet.compression"="SNAPPY");

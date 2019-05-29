@@ -1,0 +1,21 @@
+
+USE mysql;
+
+--  创建用户
+CREATE USER  ETL   IDENTIFIED BY 'ETL_MZ_2016';
+
+-- 查看用户权限
+SHOW GRANTS FOR ETL;
+
+-- 赋予权限
+GRANT ALL PRIVILEGES ON *.* TO ETL;
+
+-- 权限生效
+FLUSH  PRIVILEGES ; -- 注意：修改完权限以后 一定要刷新服务，或者重启服务，刷新服务用：FLUSH PRIVILEGES。
+
+
+
+
+
+
+

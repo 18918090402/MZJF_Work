@@ -1,0 +1,22 @@
+select 
+id 
+,p_code
+,p_type
+,p_name
+,p_pay_type
+,p_accept_type
+,p_expect
+,p_delay_month
+,p_assure_type
+,p_approach
+,p_price_min
+,p_price_max
+,p_compensation
+,p_compensation_overdue
+,p_enabled
+,p_creator
+,p_updator
+,version
+,create_time
+,update_time 
+from odsopr.products

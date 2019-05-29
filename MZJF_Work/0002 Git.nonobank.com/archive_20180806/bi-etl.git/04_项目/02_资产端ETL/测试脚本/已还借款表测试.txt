@@ -1,0 +1,65 @@
+ÒÑ»¹½è¿îÍ³¼Æ
+
+describe idw.FACT_REPAYED_BORROWS_STAT  
+
+-- ²âÊÔ1  busi_line
+select * from FACT_REPAYED_BORROWS_STAT order by rand() limit 2
+
+bo_id: a) 23 b) 21 
+
+select * from idw.FACT_REPAYED_BORROWS_STAT where bo_id in (21,23) 
+
+
+select id,bo_expect,bo_expect_cat,bo_finish_price,bo_rate,bo_audit_time,bo_agree_time from odsopr.borrows where id in (21,23) 
+
+select * from odsopr.products where id=4
+
+-- ²âÊÔ2 
+
+select * from FACT_REPAYED_BORROWS_STAT where interest_rate_cut is not null
+
+
+select bp_id from odsopr.borrows where id =285407
+
+select * from odsopr.user_interestratecut where bp_id =440514
+
+-- ²âÊÔ3
+select bo_id,all_repayed_time from idw.FACT_REPAYED_BORROWS_STAT where bo_id in (21,23) 
+
+select bo_id,max(br_repay_time) from borrows_repayment where bo_id in (21,23)  group by 1 
+
+
+-- ²âÊÔ4 
+
+select bo_id, is_first_repay_overdue,first_repay_overdue_days
+from idw.FACT_REPAYED_BORROWS_STAT 
+where is_first_repay_overdue>0
+and bo_id=5734
+
+
+select * from odsopr.borrows_repayment where bo_id=5734
+
+-- ²âÊÔ5 
+select bo_id,overdue_cnt,overdue_price_b,overdue_price_l,overdue_price_punish,overdue_service_fee
+from idw.FACT_REPAYED_BORROWS_STAT 
+where overdue_cnt>0
+
+
+select bo_id,count(*),sum(br_price_b),sum(br_price_l),sum(br_price_punish),sum(br_service_fee)
+from borrows_repayment 
+where bo_id=3422 and br_overdue_terms>0 
+group by 1 
+
+-- ²âÊÔ6
+
+select bo_id,max_overdue_days,total_overdue_days
+from idw.FACT_REPAYED_BORROWS_STAT 
+where  bo_id=3422
+
+
+
+
+select bo_id,max(datediff(br_repay_time,br_time)),sum(datediff(br_repay_time,br_time))
+from borrows_repayment 
+where bo_id=3422 and br_overdue_terms>0 
+group by 1 

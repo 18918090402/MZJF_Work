@@ -1,0 +1,42 @@
+
+-- 1.建表
+set mapreduce.job.name=DMT_RM_FACT_SHOP_FACE_DATA; 
+set mapreduce.job.queuename = etl-dw;  
+
+set hive.exec.parallel=true ;
+set hive.groupby.skewindata = true ;
+set hive.map.aggr = true ; 
+
+set hive.enforce.bucketing = true;
+
+set hive.exec.dynamic.partition=true;
+set hive.exec.dynamic.partition.mode=nonstrict; 
+set hive.exec.max.dynamic.partitions.pernode=100000000;
+set hive.exec.max.dynamic.partitions=100000000;
+set hive.exec.max.created.files=100000000;
+
+drop table if exists dmt_rm.FACT_SHOP_FACE_DATA;
+create table if not exists dmt_rm.FACT_SHOP_FACE_DATA
+( SHOP_ID STRING   COMMENT '商户ID',
+  FACE_ID STRING   COMMENT '门店ID', 
+  FACE_NAME STRING  COMMENT '门店',
+  SHOP_NAME STRING  COMMENT '商户名称',
+  SHOP_PROVICE STRING COMMENT '商户所在省份',
+  REG_PROVICE STRING  COMMENT '商户注册所在省份',
+  REG_CITY STRING  COMMENT '商户注册所在城市',
+  SHOP_CITY STRING  COMMENT '商户所在城市',
+  SHOP_START_DATE STRING   COMMENT '商户成立时间',
+  LEGAL_IDCARD STRING   COMMENT '法定代表人身份证号',
+  SHOP_ADDRESS STRING   COMMENT '商户经营地址',
+  FACE_ADDRESS STRING   COMMENT '门店经营地址',
+  SHOP_SCORE STRING   COMMENT '商户评分表得分',
+  REPORT_RESULT STRING   COMMENT '商户最近巡检结果',
+  SHOP_STATUS STRING   COMMENT '商户状态',
+  FACE_STATUS STRING   COMMENT '门店状态',
+  DW_CREATE_BY     STRING COMMENT '系统字段-创建者',
+   DW_CREATE_TIME   STRING COMMENT '系统字段-创建时间',
+   DW_UPDATE_BY     STRING COMMENT '系统字段-修改者',
+   DW_UPDATE_TIME   STRING COMMENT '系统字段-修改时间'
+) COMMENT '风控商户门店表'
+   PARTITIONED BY (STAT_DATE STRING COMMENT '分区键:统计日期')
+    STORED AS PARQUET TBLPROPERTIES ("parquet.compression"="SNAPPY");

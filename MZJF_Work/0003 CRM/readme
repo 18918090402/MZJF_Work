@@ -1,0 +1,25 @@
+idw.dim_user_tag_code               --用户标签编码映射表(1~290)
+idw.user_tag_hist                   --用户标签事实表
+idw.user_tag_hist_legacy            --用户标签存量数据初始化
+idw.user_tag                        --用户基础标签表，从idw.user_tag_hist表中，筛选(45,57,58,59,61,63,60,47,48,49,50,51,291,52,53,54,55,56,292,41,293,64,97,294,295,296)后生成
+idw.user_tag_cur                    --视图，SELECT * FROM idw.user_tag WHERE stat_date = date_sub(current_date(), 1)，idw.user_tag的前一天数据
+idw.user_tag_finance                --金融类
+idw.user_tag_finance_cur            --
+idw.user_tag_legacy                 --
+idw.user_tag_loan                   --贷款类
+idw.user_tag_loan_cur               --视图
+idw.user_tag_tmp_01                 --
+idw.user_tag_tmp_02                 --
+
+
+
+--查询task_name, 
+select a.SCRIPT_PRIORITY,a.TASK_ID,b.TASK_NAME,a.SCRIPT_TEXT,a.SCRIPT_TYPE
+from ETL_CONTROL.ETL_CONTROL_TASK_SCRIPT a
+inner join ETL_CONTROL.ETL_CONTROL_TASK b
+on a.TASK_ID = b.TASK_ID 
+and b.TASK_NAME like '%DMT_CRM_SEC%'
+--and b.TASK_NAME = 'db_usr_log.user_register_detail_log'
+--and b.task_id = 310000093
+order by 3,2,1
+

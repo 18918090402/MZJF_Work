@@ -1,0 +1,11 @@
+CREATE TABLE `DQ_COLUMN_RULE` (
+  `ID` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `COLUMN_ID` int(11) NOT NULL COMMENT '校验的字段',
+  `AE_ID` int(11) DEFAULT NULL COMMENT '校验表达式ID',
+  `RULE_VALUE` varchar(64) DEFAULT NULL COMMENT '规则值',
+  `GROUP_SEQ` int(11) NOT NULL DEFAULT '0' COMMENT '校验规则组序号，同一组的序号相同',
+  `IN_GROUP_LOGIC` varchar(32) DEFAULT NULL COMMENT '校验规则组内的逻辑(AND\\OR...)，组内逻辑需要相同',
+  `IS_VALID` int(1) NOT NULL DEFAULT '1' COMMENT '1:有效,0:无效',
+  `DESC` varchar(126) DEFAULT NULL COMMENT '描述',
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='定义数据清洗的表字段及对应规则';

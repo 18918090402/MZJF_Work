@@ -1,0 +1,160 @@
+describe idw.FACT_IN_REPAY_BORROWS_SNAPSHOT 
+
+
+-- ≤‚ ‘1    
+SELECT *
+FROM idw.FACT_IN_REPAY_BORROWS_SNAPSHOT  ORDER BY RAND() LIMIT 2
+-- 255,135
+
+select bo_id,p_id,bo_rate,should_repay_cnt,bo_audit_time,bo_agree_time 
+from idw.FACT_IN_REPAY_BORROWS_SNAPSHOT  
+where bo_id in (255,135)
+
+select id,p_id,bo_rate,bo_expect,bo_audit_time,bo_agree_time
+from odsopr.borrows 
+where id in (255,135) 
+
+-- ≤‚ ‘2 
+
+
+
+select bo_id,should_repay_cnt
+,should_repay_price_b,repayed_price_b,unrepay_price_b,repayed_price_b_this_month
+,should_repay_price_l,unrepay_price_l,repayed_price_l_this_month,
+should_repay_price_punish,unrepay_price_punish,repayed_price_punish_this_month
+,should_repay_service_fee,unrepay_service_fee,repayed_service_fee,repayed_service_fee_this_month
+FROM idw.FACT_IN_REPAY_BORROWS_SNAPSHOT a
+where bo_id =255
+
+
+select br_price_b,br_price_l,br_price_punish,br_service_fee,br_time,br_is_repay
+from odsopr.borrows_repayment 
+where bo_id=255
+
+select bo_id,should_repay_cnt
+,should_repay_price_b,repayed_price_b,unrepay_price_b,repayed_price_b_this_month
+,should_repay_price_l,unrepay_price_l,repayed_price_l,repayed_price_l_this_month,
+should_repay_price_punish,unrepay_price_punish,repayed_price_punish,repayed_price_punish_this_month
+,should_repay_service_fee,unrepay_service_fee,repayed_service_fee,repayed_service_fee_this_month
+FROM idw.FACT_IN_REPAY_BORROWS_SNAPSHOT a
+where repayed_price_b_this_month>0   
+order by rand()
+limit 1 
+
+
+select count(*),sum(br_price_b),sum(br_price_l),sum(br_price_punish),sum(br_service_fee)
+from odsopr.borrows_repayment 
+where bo_id=7842
+and br_time<from_unixtime(unix_timestamp())
+
+select sum(case when br_is_repay=0 then br_price_b end) ,
+sum(case when br_is_repay=0 then br_price_l end),
+sum(case when br_is_repay=0 then br_price_punish end),
+sum(case when br_is_repay=0 then br_service_fee end)
+from odsopr.borrows_repayment 
+where bo_id=7842
+
+select sum(case when br_is_repay=1 then br_price_b end) ,
+sum(case when br_is_repay=1 then br_price_l end),
+sum(case when br_is_repay=1 then br_price_punish end),
+sum(case when br_is_repay=1 then br_service_fee end)
+from odsopr.borrows_repayment 
+where bo_id=7842
+
+select 
+sum(case when from_unixtime(unix_timestamp(br_repay_time),'yyyy-MM')='2017-03' THEN br_price_b end),
+sum(case when from_unixtime(unix_timestamp(br_repay_time),'yyyy-MM')='2017-03' THEN br_price_l end),
+sum(case when from_unixtime(unix_timestamp(br_repay_time),'yyyy-MM')='2017-03' THEN br_price_punish end),
+sum(case when from_unixtime(unix_timestamp(br_repay_time),'yyyy-MM')='2017-03' THEN br_service_fee end)
+from odsopr.borrows_repayment 
+where bo_id=7842
+
+-- ≤‚ ‘3 
+
+select bo_id, first_repay_overdue_days,is_first_repay_overdue
+from idw.FACT_IN_REPAY_BORROWS_SNAPSHOT 
+where is_first_repay_overdue>0
+order by rand()
+limit 1 
+
+select bo_id,br_time,br_repay_time,br_overdue_terms 
+from odsopr.borrows_repayment where bo_id=255 and br_expect_num=1
+
+-- ≤‚ ‘4
+select bo_id,repay_begin_day,last_repayed_time
+from idw.FACT_IN_REPAY_BORROWS_SNAPSHOT 
+where bo_id=7842
+
+
+select bo_id,min(br_time),max(br_repay_time) 
+from odsopr.borrows_repayment 
+where bo_id=7842
+group by 1 
+
+-- ≤‚ ‘5
+select bo_id,
+max_overdue_days,is_overdue_unrepay,overdue_unrepay_price,overdue_unrepay_price_b,overdue_unrepay_price_l
+,overdue_unrepay_price_punish,overdue_unrepay_expect_cnt, overdue_unrepay_days,aging,overdue_expect_cnt,overdue_repayed_price
+from idw.FACT_IN_REPAY_BORROWS_SNAPSHOT 
+where overdue_unrepay_days>0 
+order by rand()
+limit 1 
+
+
+select sum(br_price_b),sum(br_price_l),sum(br_price_punish),sum(br_service_fee)
+FROM borrows_repayment 
+where br_overdue_terms>0 and br_is_repay=0 
+and bo_id=135
+
+
+select count(*),max(datediff(from_unixtime(unix_timestamp(),"yyyy-MM-dd"),br_time)) as yq_day
+FROM borrows_repayment 
+where br_overdue_terms>0 and br_is_repay=0 
+and bo_id=135
+
+
+select bo_id,
+max_overdue_days,is_overdue_unrepay,overdue_unrepay_price,overdue_unrepay_price_b,overdue_unrepay_price_l
+,overdue_unrepay_price_punish,overdue_unrepay_expect_cnt, overdue_unrepay_days,aging,overdue_expect_cnt,overdue_repayed_price
+from idw.FACT_IN_REPAY_BORROWS_SNAPSHOT 
+where overdue_repayed_price>0 
+order by rand()
+limit 1 
+
+
+select bo_id,sum(br_price) 
+from borrows_repayment
+where bo_id=3240 and br_overdue_terms>0 and br_is_repay=1 
+group by 1 
+
+
+select bo_id,count(*)
+from borrows_repayment
+where bo_id=3240 and br_overdue_terms>0 
+group by 1 
+
+-- ≤‚ ‘6
+select bo_id,compensate_amt,repayed_compensate_amt
+from idw.FACT_IN_REPAY_BORROWS_SNAPSHOT
+where compensate_amt>0 and repayed_compensate_amt>0
+order by rand()
+limit 1 
+
+
+select sum(bg_price),sum(case when b.br_is_repay=1 then br_price end)  
+from borrows_guarantee a     
+left join borrows_repayment b on a.br_id=b.id 
+where a.bo_id=6702
+
+
+-- ≤‚ ‘7 
+
+select bo_id,dun_type,dun_company,dun_company_name,dun_start_time,dun_end_time 
+from idw.FACT_IN_REPAY_BORROWS_SNAPSHOT 
+where dun_type=0
+order by rand()
+limit 1 
+
+select * from odsopr.borrows_outsource_dunning where bo_id=6000 and mod_status=0
+
+select * from odsopr.borrows_outsource_dunning_company

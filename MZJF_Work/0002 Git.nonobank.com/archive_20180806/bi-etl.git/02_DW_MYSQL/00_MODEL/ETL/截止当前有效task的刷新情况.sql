@@ -1,0 +1,50 @@
+-- 截止当前有效task的刷新情况
+-- 日报
+SELECT 
+        A.TASK_ID
+        , IFNULL(B.JOB_TYPE, C.JOB_TYPE) AS JOB_TYPE
+        , IFNULL(
+                B.REFRESH_FREQ_NAME
+                , C.REFRESH_FREQ_NAME
+        ) AS REFRESH_FREQ_NAME
+        , LAST_ETL_TIME
+        , LAST_DATA_TIME
+        , LAST_DELETE_TIME 
+FROM
+        ETL.ETL_CONTROL_TASK_LAST_TIME A 
+        LEFT JOIN ETL_CONTROL_TASK_M2M B 
+                ON A.TASK_ID = B.ID 
+        LEFT JOIN ETL_CONTROL_TASK_DW C 
+                ON A.TASK_ID = C.ID 
+                WHERE B.RUN_FLAG = 1 OR C.RUN_FLAG = 1 
+UNION
+ALL 
+SELECT 
+        ID AS TASK_ID
+        , B.JOB_TYPE
+        , B.REFRESH_FREQ_NAME
+        , NULL LAST_ETL_TIME
+        , NULL LAST_DATA_TIME
+        , NULL LAST_DELETE_TIME 
+FROM
+        ETL_CONTROL_TASK_M2M B 
+        LEFT JOIN ETL.ETL_CONTROL_TASK_LAST_TIME A 
+                ON A.TASK_ID = B.ID 
+WHERE A.TASK_ID IS NULL 
+        AND B.RUN_FLAG = 1 
+UNION
+ALL 
+SELECT 
+        ID AS TASK_ID
+        , B.JOB_TYPE
+        , B.REFRESH_FREQ_NAME
+        , NULL LAST_ETL_TIME
+        , NULL LAST_DATA_TIME
+        , NULL LAST_DELETE_TIME 
+FROM
+        ETL_CONTROL_TASK_DW B 
+        LEFT JOIN ETL.ETL_CONTROL_TASK_LAST_TIME A 
+                ON A.TASK_ID = B.ID 
+WHERE A.TASK_ID IS NULL 
+        AND B.RUN_FLAG = 1 
+ORDER BY 4 

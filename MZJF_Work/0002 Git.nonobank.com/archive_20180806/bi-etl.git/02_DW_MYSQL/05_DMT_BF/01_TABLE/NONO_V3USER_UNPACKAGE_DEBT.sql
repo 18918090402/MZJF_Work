@@ -1,0 +1,35 @@
+DROP TABLE IF EXISTS DMT_BF.NONO_V3USER_UNPACKAGE_DEBT;
+CREATE TABLE IF NOT EXISTS DMT_BF.NONO_V3USER_UNPACKAGE_DEBT
+(
+   STAT_DATE VARCHAR(20) COMMENT '数据日期',
+   BO_ID              bigint(20) COMMENT '标的',
+   TOTAL_PRICE DECIMAL(38,10) COMMENT '本金合计',
+   BO_EXPECT    INT COMMENT '借款期限', 
+   BO_SIGN_TIME   datetime COMMENT '签约时间',
+   REMAININGPERIOD   INT COMMENT '债权数',
+   BO_EXTNO   varchar(20) COMMENT '协议号',
+   BO_AIM             varchar(50) COMMENT '借款目的',
+   PER_PRICE              DECIMAL(38,10) COMMENT '每期本金',
+   LAST_PLAN_TIME                  VARCHAR(20) COMMENT '最后计划还款日',
+   REAL_NAME                 varchar(20) COMMENT '真实姓名',
+   USER_NAME          varchar(50) COMMENT '用户名', 
+   ID_NUM          varchar(20) COMMENT '身份证',
+   BRITHDAY          varchar(20) COMMENT '出生年月',
+   MOBILE_NUM          varchar(20) COMMENT '手机号',
+   ACADEMY          varchar(80) COMMENT '学校',
+   MAJOR          varchar(50) COMMENT '专业',
+   EDUCATION          varchar(50) COMMENT '学历',
+   EDU_START_DATE          varchar(20) COMMENT '入学年份',
+   CAMPUS  varchar(50)  COMMENT '校区',
+   GENDER          varchar(20) COMMENT '性别',
+   EMERGENCY_PARENT          varchar(1000) COMMENT '父母',
+   EMERGENCY_COUNSELOR          varchar(1000) COMMENT '辅导员',
+   EMERGENCY_OTHER          varchar(1000) COMMENT '好友',
+   ADDRESS          varchar(200) COMMENT '住址',
+   DW_CREATE_BY         varchar(4) DEFAULT 'SYS' COMMENT '系统字段-创建者',
+   DW_CREATE_TIME       datetime COMMENT '系统字段-创建时间',
+   DW_UPDATE_BY         varchar(4) DEFAULT 'SYS' COMMENT '系统字段-修改者',
+   DW_UPDATE_TIME       datetime COMMENT '系统字段-修改时间',
+   PRIMARY KEY (STAT_DATE, BO_ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='债权回流表'
+;

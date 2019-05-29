@@ -1,0 +1,481 @@
+set hive.exec.dynamic.partition.mode=nonstrict;
+set mapreduce.map.memory.mb=4096;   
+set mapreduce.reduce.memory.mb=8192;
+set mapreduce.map.java.opts=-Xmx3072m;
+set mapreduce.reduce.java.opts=-Xmx6144m;
+
+
+#不良标的id
+INSERT OVERWRITE table dmt_bf.wdzj_npl_bo_legacy
+  SELECT overdue.bo_id
+    from odsopr.invt_overdue_bo_tmp_hist overdue
+   WHERE 1 = 1
+     AND EXISTS (SELECT 1
+      from odsopr.debt_buy_log_hist
+     where status = 1
+       and ds_id = 0
+       and bo_id = overdue.bo_id
+       and va_id in (23665,809236,882609));
+
+
+#临时基础数据表
+DROP TABLE IF EXISTS TMP.TMP_IDW_HIST_BASE_DATA ;
+CREATE TABLE TMP.TMP_IDW_HIST_BASE_DATA AS
+SELECT 
+     bo.id as bo_id,
+     substr(bo.bo_title,1,50) as bo_title,
+     '100' as schedule ,
+     CONCAT(bp.bp_rate_lender,'%') as interest_rate,
+     0 as reward,
+     case when bo.bo_expect_cat = 2 then '月'
+        else '天' END as deadline_unit,
+     bo.bo_expect as deadline,
+     bo.bo_price as bo_price,
+     bo.bp_id as bp_id,
+     bo.p_id as p_id,
+      CASE WHEN bo.bo_paytype = "DQHBFX"
+        THEN 1
+      WHEN bo.bo_paytype = "DBDX"
+        THEN 2
+      WHEN bo.bo_paytype = "XXHB"
+        THEN 9
+      WHEN bo.bo_paytype = "ZYHK"
+        THEN 9
+      ELSE 2 END repayment_type,
+     case when ui.hj_province_name like '%省' then regexp_replace(ui.hj_province_name,'省','')
+     WHEN ui.hj_province_name like '%市' then regexp_replace(ui.hj_province_name,'市','')
+     WHEN ui.hj_province_name like '%省' then regexp_replace(ui.hj_province_name,'省','')
+     WHEN ui.hj_province_name like '%维吾尔自治区' then regexp_replace(ui.hj_province_name,'维吾尔自治区','')
+     WHEN ui.hj_province_name like '%回族自治区' then regexp_replace(ui.hj_province_name,'回族自治区','')
+     WHEN ui.hj_province_name like '%壮族自治区' then regexp_replace(ui.hj_province_name,'壮族自治区','')
+     WHEN ui.hj_province_name like '%自治区' then regexp_replace(ui.hj_province_name,'自治区','')
+     WHEN ui.hj_province_name like '%特别行政区' then regexp_replace(ui.hj_province_name,'特别行政区','')
+     WHEN ui.hj_province_name IS NULL then '省'
+     ELSE ui.hj_province_name END as province,
+     if(ui.hj_city_name is null , '市',ui.hj_city_name ) as city,
+     bo.user_id as user_name,
+     '' as amount_used_desc,
+     'http://www.nonobank.com' as loan_url,
+     0 as is_agency,
+     bo.bo_finish_time as bo_finish_time,
+     bo.publish_time as publish_time
+from 
+  ODS.t_borrows_hist bo
+  INNER JOIN ODS.t_borrows_prepare_hist bp ON bo.bp_id = bp.id
+  LEFT JOIN idw.user_info ui  ON bo.user_id = ui.user_id AND ui.stat_date = FROM_UNIXTIME(UNIX_TIMESTAMP() - 1 * 24 * 60 * 60, 'yyyy-MM-dd')
+where 
+  bo.bo_is_finish = 1 
+  AND bo.bo_is_success = 1
+  AND bo.id <>2975806;
+
+#拆分标逻辑 临时表
+DROP TABLE IF EXISTS TMP.TMP_IDW_HIST_SPLIT_BID_ID;
+CREATE TABLE TMP.TMP_IDW_HIST_SPLIT_BID_ID AS
+SELECT 
+    DISTINCT (bd2.bo_id) bo_id
+  FROM ODS.t_borrows_bidding_hist bd2
+    INNER JOIN (
+                 SELECT DISTINCT (bd.bo_id) bo_id
+                 FROM ODS.t_borrows_bidding_hist bd
+                 WHERE bd.va_id in (23665,809236,882609) AND bd.status IN (1, 2)) bd1
+      ON bd2.bo_id = bd1.bo_id
+  WHERE bd2.va_id not in (23665,809236,882609) AND bd2.status IN (1, 2);
+
+#拆分标 标的金额
+DROP TABLE IF EXISTS TMP.TMP_IDW_HIST_SPLIT_BID_AMOUNT;
+CREATE TABLE TMP.TMP_IDW_HIST_SPLIT_BID_AMOUNT AS
+ SELECT
+    dbl_bd.bo_id bo_id,
+    sum(dbl_bd.price) sum_invest,
+    23665 va_id
+ from ODS.t_debt_buy_log_hist dbl_bd
+   INNER JOIN ODS.t_borrows_hist bo on dbl_bd.bo_id = bo.id
+   WHERE
+    dbl_bd.va_id in (23665,809236,882609) and 
+    dbl_bd.ds_id = 0 and dbl_bd.status = 1
+    group by dbl_bd.bo_id 
+  union all 
+   SELECT 
+    dbl_bd.bo_id bo_id,
+    sum(dbl_bd.price) sum_invest ,
+    1 va_id
+ from ODS.t_debt_buy_log_hist dbl_bd
+   INNER JOIN ODS.t_borrows_hist bo on dbl_bd.bo_id = bo.id
+   WHERE 
+    dbl_bd.va_id not in (23665,809236,882609) and 
+    dbl_bd.ds_id = 0 and dbl_bd.status = 1
+    group by dbl_bd.bo_id;
+
+
+
+
+
+
+
+
+#v3投标成功标的ID记录表
+DROP TABLE IF EXISTS TMP.TMP_IDW_HIST_V3_BUY_BID_ID;
+CREATE TABLE  TMP.TMP_IDW_HIST_V3_BUY_BID_ID AS 
+SELECT DISTINCT(bo_id) bo_id
+FROM ODS.t_debt_buy_log_hist
+WHERE va_id in (23665,809236,882609) AND ds_id = 0  AND status=1;
+
+#债转和虚拟标
+DROP TABLE IF EXISTS  TMP.TMP_IDW_HIST_V3_SUM_INVT;
+CREATE TABLE TMP.TMP_IDW_HIST_V3_SUM_INVT  AS
+SELECT
+ dbl.bo_id,
+ sum(dbl.price)      invest,
+ max(dbl.pay_time)   last_pay_time,
+ min(ds.expect)      min_expect,
+ min(ds.create_time) min_publish_time,
+ 23665 va_id
+FROM ODS.t_debt_buy_log_hist dbl
+ INNER JOIN ODS.t_debt_sale_hist ds ON dbl.ds_id = ds.id
+WHERE ds.va_id in (23665,809236,882609) and dbl.ds_id != 0 AND dbl.status = 1
+GROUP BY dbl.bo_id,to_date(dbl.pay_time)
+union all
+SELECT
+ dbl.bo_id,
+ sum(dbl.price)      invest,
+ max(dbl.pay_time)   last_pay_time,
+ min(ds.expect)      min_expect,
+ min(ds.create_time) min_publish_time,
+ 1 va_id
+FROM ODS.t_debt_buy_log_hist dbl
+ INNER JOIN ODS.t_debt_sale_hist ds ON dbl.ds_id = ds.id
+WHERE ds.va_id not in (23665,809236,882609) and dbl.ds_id != 0 AND dbl.status = 1
+GROUP BY dbl.bo_id,to_date(dbl.pay_time);
+
+
+#BO表
+INSERT OVERWRITE TABLE dmt_bf.wdzj_bo_info PARTITION(STAT_DATE)
+select 
+  hbd.bo_id as project_id,
+  hbd.bo_title as title,
+  hbd.bo_price as amount,
+  hbd.schedule as schedule,
+  hbd.interest_rate as interest_rate,
+  hbd.deadline as deadline,
+  hbd.deadline_unit as deadline_unit,
+  hbd.reward as reward,
+  case when hbd.p_id= 96 then '消费贷'
+  ELSE '信用标' END as type,
+  hbd.repayment_type as repayment_type,
+  hbd.province as province,
+  hbd.city as city,
+  hbd.user_name as user_name,
+  hbd.amount_used_desc as amount_used_desc,
+  hbd.loan_url as loan_url,
+  from_unixtime(unix_timestamp(hbd.bo_finish_time ,'yyyy-MM-dd HH:mm:ss.s'),'yyyy-MM-dd HH:mm:ss') as success_time,
+  from_unixtime(unix_timestamp(hbd.publish_time,'yyyy-MM-dd HH:mm:ss.s'),'yyyy-MM-dd HH:mm:ss') as publish_time,
+  hbd.is_agency as is_agency,
+  hbd.bo_id  as bo_id,
+  1 as bo_type,
+  hbd.p_id,
+  to_date(hbd.bo_finish_time) as huiliu_time,
+  0 as is_delete,
+  'SYS' AS DW_CREATE_BY,
+  FROM_UNIXTIME(UNIX_TIMESTAMP(),'yyyy-MM-dd HH:mm:ss') AS DW_CREATE_TIME,
+  'SYS' AS DW_UPDATE_BY,
+  FROM_UNIXTIME(UNIX_TIMESTAMP(),'yyyy-MM-dd') AS DW_UPDATE_TIME,
+  '2018-01-01' as STAT_DATE
+from  
+  TMP.TMP_IDW_HIST_BASE_DATA hbd
+  where  hbd.bo_id not in (select bo_id from TMP.TMP_IDW_HIST_SPLIT_BID_ID union all select bo_id from dmt_bf.wdzj_npl_bo_legacy)
+union all
+select 
+  cast(hbd.bo_id as string)  as project_id,
+  hbd.bo_title as title,
+  sba.sum_invest as amount,
+  hbd.schedule as schedule,
+  hbd.interest_rate as interest_rate,
+  hbd.deadline as deadline,
+  hbd.deadline_unit as deadline_unit,
+  hbd.reward as reward,
+  case when hbd.p_id= 96 then '消费贷'
+  ELSE '信用标' END as type,
+  hbd.repayment_type as repayment_type,
+  hbd.province as province,
+  hbd.city as city,
+  hbd.user_name as user_name,
+  hbd.amount_used_desc as amount_used_desc,
+  hbd.loan_url as loan_url,
+  from_unixtime(unix_timestamp(hbd.bo_finish_time ,'yyyy-MM-dd HH:mm:ss.s'),'yyyy-MM-dd HH:mm:ss') as success_time,
+  from_unixtime(unix_timestamp(hbd.publish_time,'yyyy-MM-dd HH:mm:ss.s'),'yyyy-MM-dd HH:mm:ss')  as publish_time,
+  hbd.is_agency as is_agency,
+  hbd.bo_id  as bo_id,
+  4 as bo_type,
+  hbd.p_id,
+  to_date(hbd.bo_finish_time) as huiliu_time,
+  0 as is_delete,
+  'SYS' AS DW_CREATE_BY,
+  FROM_UNIXTIME(UNIX_TIMESTAMP(),'yyyy-MM-dd HH:mm:ss') AS DW_CREATE_TIME,
+  'SYS' AS DW_UPDATE_BY,
+  FROM_UNIXTIME(UNIX_TIMESTAMP(),'yyyy-MM-dd') AS DW_UPDATE_TIME,
+  '2018-01-01' as STAT_DATE
+from 
+  TMP.TMP_IDW_HIST_BASE_DATA hbd 
+  INNER JOIN TMP.TMP_IDW_HIST_SPLIT_BID_AMOUNT sba on sba.bo_id = hbd.bo_id
+  INNER JOIN TMP.TMP_IDW_HIST_SPLIT_BID_ID sbi on sbi.bo_id = sba.bo_id
+  where  sba.va_id in (23665,809236,882609)
+  and hbd.bo_id not in (select bo_id from dmt_bf.wdzj_npl_bo_legacy)
+union all
+select 
+  CONCAT(cast(hbd.bo_id as string),'_', substr(cast(hbd.bo_id as string),-1)) as project_id,
+  hbd.bo_title as title,
+  sba.sum_invest as amount,
+  hbd.schedule as schedule,
+  hbd.interest_rate as interest_rate,
+  hbd.deadline as deadline,
+  hbd.deadline_unit as deadline_unit,
+  hbd.reward as reward,
+  case when hbd.p_id= 96 then '消费贷'
+  ELSE '信用标' END as type,
+  hbd.repayment_type as repayment_type,
+  hbd.province as province,
+  hbd.city as city,
+  hbd.user_name as user_name,
+  hbd.amount_used_desc as amount_used_desc,
+  hbd.loan_url as loan_url,
+  from_unixtime(unix_timestamp(hbd.bo_finish_time ,'yyyy-MM-dd HH:mm:ss.s'),'yyyy-MM-dd HH:mm:ss') as success_time,
+  from_unixtime(unix_timestamp(hbd.publish_time,'yyyy-MM-dd HH:mm:ss.s'),'yyyy-MM-dd HH:mm:ss')  as publish_time,
+  hbd.is_agency as is_agency,
+  hbd.bo_id  as bo_id,
+  5 as bo_type,
+  hbd.p_id,
+  to_date(hbd.bo_finish_time) as huiliu_time,
+  0 as is_delete,
+  'SYS' AS DW_CREATE_BY,
+  FROM_UNIXTIME(UNIX_TIMESTAMP(),'yyyy-MM-dd HH:mm:ss') AS DW_CREATE_TIME,
+  'SYS' AS DW_UPDATE_BY,
+  FROM_UNIXTIME(UNIX_TIMESTAMP(),'yyyy-MM-dd') AS DW_UPDATE_TIME,
+  '2018-01-01' as STAT_DATE
+from 
+  TMP.TMP_IDW_HIST_BASE_DATA hbd 
+  INNER JOIN TMP.TMP_IDW_HIST_SPLIT_BID_AMOUNT sba on sba.bo_id = hbd.bo_id
+  INNER JOIN TMP.TMP_IDW_HIST_SPLIT_BID_ID sbi on sbi.bo_id = hbd.bo_id
+  where   sba.va_id not in (23665,809236,882609)
+  and hbd.bo_id not in (select bo_id from dmt_bf.wdzj_npl_bo_legacy)
+union all
+select
+  CONCAT(cast(hbd.bo_id as string),'_', to_date(hsi.last_pay_time))  as project_id,
+  hbd.bo_title as title,
+  hsi.invest as amount,
+  hbd.schedule as schedule,
+  hbd.interest_rate as interest_rate,
+  hsi.min_expect as deadline,
+  hbd.deadline_unit as deadline_unit,
+  hbd.reward as reward,
+  '债转标' AS type,
+  hbd.repayment_type as repayment_type,
+  hbd.province as province,
+  hbd.city as city,
+  hbd.user_name as user_name,
+  hbd.amount_used_desc as amount_used_desc,
+  hbd.loan_url as loan_url,
+  from_unixtime(unix_timestamp(hsi.last_pay_time ,'yyyy-MM-dd HH:mm:ss.s'),'yyyy-MM-dd HH:mm:ss') as success_time,
+  from_unixtime(unix_timestamp(hsi.min_publish_time,'yyyy-MM-dd HH:mm:ss.s'),'yyyy-MM-dd HH:mm:ss')  as publish_time,
+  hbd.is_agency as is_agency,
+  hbd.bo_id  as bo_id,
+  2 as bo_type,
+  hbd.p_id,
+  to_date(hsi.last_pay_time) as huiliu_time,
+  0 as is_delete,
+  'SYS' AS DW_CREATE_BY,
+  FROM_UNIXTIME(UNIX_TIMESTAMP(),'yyyy-MM-dd HH:mm:ss') AS DW_CREATE_TIME,
+  'SYS' AS DW_UPDATE_BY,
+  FROM_UNIXTIME(UNIX_TIMESTAMP(),'yyyy-MM-dd') AS DW_UPDATE_TIME,
+  '2018-01-01' as STAT_DATE
+from 
+  TMP.TMP_IDW_HIST_BASE_DATA hbd 
+  INNER JOIN TMP.TMP_IDW_HIST_V3_SUM_INVT hsi ON hbd.bo_id = hsi.bo_id
+  INNER JOIN TMP.TMP_IDW_HIST_V3_BUY_BID_ID bbi ON bbi.bo_id = hsi.bo_id
+  where hsi.va_id not in (23665,809236,882609) and hbd.bo_id not in (select id from TMP.TMP_OVERDUE_BO_ID)
+union all 
+select
+  CONCAT(cast(hbd.bo_id as string),'_', to_date(hsi.last_pay_time))  as project_id,
+  hbd.bo_title as title,
+  hsi.invest as amount,
+  hbd.schedule as schedule,
+  hbd.interest_rate as interest_rate,
+  hsi.min_expect as deadline,
+  hbd.deadline_unit as deadline_unit,
+  hbd.reward as reward,
+  '债转标' AS type,
+  hbd.repayment_type as repayment_type,
+  hbd.province as province,
+  hbd.city as city,
+  hbd.user_name as user_name,
+  hbd.amount_used_desc as amount_used_desc,
+  hbd.loan_url as loan_url,
+  from_unixtime(unix_timestamp(hsi.last_pay_time ,'yyyy-MM-dd HH:mm:ss.s'),'yyyy-MM-dd HH:mm:ss') as success_time,
+  from_unixtime(unix_timestamp(hsi.min_publish_time,'yyyy-MM-dd HH:mm:ss.s'),'yyyy-MM-dd HH:mm:ss')  as publish_time,
+  hbd.is_agency as is_agency,
+  hbd.bo_id  as bo_id,
+  2 as bo_type,
+  hbd.p_id,
+  to_date(hsi.last_pay_time) as huiliu_time,
+  0 as is_delete,
+  'SYS' AS DW_CREATE_BY,
+  FROM_UNIXTIME(UNIX_TIMESTAMP(),'yyyy-MM-dd HH:mm:ss') AS DW_CREATE_TIME,
+  'SYS' AS DW_UPDATE_BY,
+  FROM_UNIXTIME(UNIX_TIMESTAMP(),'yyyy-MM-dd') AS DW_UPDATE_TIME,
+  '2018-01-01' as STAT_DATE
+from 
+  TMP.TMP_IDW_HIST_BASE_DATA hbd 
+  INNER JOIN (select 
+     bo_id,
+     sum(invest)      invest,
+     max(last_pay_time)   last_pay_time,
+     max(min_expect)      min_expect,
+     min(min_publish_time) min_publish_time from TMP.TMP_IDW_HIST_V3_SUM_INVT si group by si.bo_id ,to_date(si.last_pay_time)) hsi 
+  ON hbd.bo_id = hsi.bo_id
+  where  hbd.bo_id not in (select bo_id from TMP.TMP_IDW_HIST_V3_BUY_BID_ID union all select bo_id from dmt_bf.wdzj_npl_bo_legacy)
+union all 
+select
+  CONCAT(cast(hbd.bo_id as string),'_', to_date(hsi.last_pay_time), substr(cast(hbd.bo_id as string),-1)) as project_id,
+  hbd.bo_title as title,
+  hsi.invest as amount,
+  hbd.schedule as schedule,
+  hbd.interest_rate as interest_rate,
+  hsi.min_expect as deadline, 
+  hbd.deadline_unit as deadline_unit,
+  hbd.reward as reward,
+  case when hbd.p_id= 96 then '消费贷'
+  ELSE '信用标' END as type, 
+  hbd.repayment_type as repayment_type,
+  hbd.province as province,
+  hbd.city as city,
+  hbd.user_name as user_name,
+  hbd.amount_used_desc as amount_used_desc,
+  hbd.loan_url as loan_url,
+  from_unixtime(unix_timestamp(hsi.last_pay_time ,'yyyy-MM-dd HH:mm:ss.s'),'yyyy-MM-dd HH:mm:ss') as success_time,
+  from_unixtime(unix_timestamp(hsi.min_publish_time,'yyyy-MM-dd HH:mm:ss.s'),'yyyy-MM-dd HH:mm:ss')  as publish_time,
+  hbd.is_agency as is_agency,
+  hbd.bo_id  as bo_id,
+  3 as bo_type,
+  hbd.p_id,
+  to_date(hsi.last_pay_time) as huiliu_time,
+  0 as is_delete,
+  'SYS' AS DW_CREATE_BY,
+  FROM_UNIXTIME(UNIX_TIMESTAMP(),'yyyy-MM-dd HH:mm:ss') AS DW_CREATE_TIME,
+  'SYS' AS DW_UPDATE_BY,
+  FROM_UNIXTIME(UNIX_TIMESTAMP(),'yyyy-MM-dd') AS DW_UPDATE_TIME,
+  '2018-01-01' as STAT_DATE
+from 
+  TMP.TMP_IDW_HIST_BASE_DATA hbd 
+  INNER JOIN TMP.TMP_IDW_HIST_V3_SUM_INVT hsi ON hbd.bo_id = hsi.bo_id
+  INNER JOIN TMP.TMP_IDW_HIST_V3_BUY_BID_ID bbi ON bbi.bo_id = hbd.bo_id
+  where hsi.va_id in (23665,809236,882609) and hbd.bo_id not in (select bo_id from dmt_bf.wdzj_npl_bo_legacy);
+
+
+
+
+
+
+
+
+
+
+#历史投资记录
+
+INSERT OVERWRITE TABLE DMT_BF.WDZJ_DEBT_INFO PARTITION(STAT_DATE)
+SELECT
+  CASE WHEN  dbl.ds_id = 0 AND bo_sep.bo_id is NULL THEN cast(dbl.bo_id as string)
+    WHEN dbl.ds_id = 0 AND bo_sep.bo_id is NOT NULL AND dbl.va_id in (23665,809236,882609) THEN cast(dbl.bo_id as string)
+    WHEN dbl.ds_id = 0 AND bo_sep.bo_id is NOT NULL AND dbl.va_id not in (23665,809236,882609) THEN CONCAT(cast(dbl.bo_id as string),'_', substr(cast(dbl.bo_id as string),-1))
+    WHEN dbl.ds_id != 0 AND ds.va_id in (23665,809236,882609) AND bo_vir.bo_id is NOT NULL THEN CONCAT(cast(dbl.bo_id as string),'_',to_date(dbl.pay_time), substr(cast(dbl.bo_id as string),-1)) 
+    WHEN dbl.ds_id != 0
+         AND ((ds.va_id not in (23665,809236,882609) AND bo_vir.bo_id is NOT NULL) OR (bo_vir.bo_id is NULL))
+      THEN CONCAT(cast(dbl.bo_id as string),'_',to_date(dbl.pay_time)) 
+    ELSE CONCAT('error_' , cast(dbl.id as string))
+  END AS project_id,
+  dbl.user_id subscribe_user_name,
+  dbl.price as amount,
+  dbl.price as valid_amount,
+  from_unixtime(unix_timestamp(dbl.pay_time,'yyyy-MM-dd HH:mm:ss.s'),'yyyy-MM-dd HH:mm:ss') as add_date,
+  1 as status,
+  0 as type,
+  3 as source_type,
+  dbl.id as dbl_id,
+  to_date(dbl.pay_time) as huiliu_time,
+   0 as is_delete,
+  'SYS' AS DW_CREATE_BY,
+  FROM_UNIXTIME(UNIX_TIMESTAMP(),'yyyy-MM-dd HH:mm:ss') AS DW_CREATE_TIME,
+  'SYS' AS DW_UPDATE_BY,
+  FROM_UNIXTIME(UNIX_TIMESTAMP(),'yyyy-MM-dd') AS DW_UPDATE_TIME,
+   '2018-01-01' as STAT_DATE
+FROM ODS.t_debt_buy_log_hist dbl LEFT JOIN ODS.t_debt_sale_hist ds on dbl.ds_id = ds.id
+LEFT JOIN TMP.TMP_IDW_HIST_SPLIT_BID_ID bo_sep on dbl.bo_id = bo_sep.bo_id
+LEFT JOIN TMP.TMP_IDW_HIST_V3_BUY_BID_ID bo_vir  on dbl.bo_id = bo_vir.bo_id
+WHERE dbl.status = 1
+  AND dbl.bo_id not in (select bo_id from dmt_bf.wdzj_npl_bo_legacy)
+  AND dbl.bo_id <>2975806;
+
+
+
+
+
+
+INSERT OVERWRITE TABLE DMT_BF.WDZJ_REPAYMENT_INFO PARTITION(STAT_DATE)
+SELECT
+  bo.id as project_id,  
+  bo.id as bo_id,
+  bo.p_id as p_id,
+  if((year(last_repay_bo.last_repay_date)*12+month(last_repay_bo.last_repay_date))-(year(bo.bo_finish_time)*12+month(bo.bo_finish_time))>0,(year(last_repay_bo.last_repay_date)*12+month(last_repay_bo.last_repay_date))-(year(bo.bo_finish_time)*12+month(bo.bo_finish_time)),0) as deadline, 
+  case when bo.bo_expect_cat = 2 then '月'
+  else '天' END as deadline_unit,
+  to_date(last_repay_bo.last_repay_date)  as huiliu_time,
+  0 as is_delete,
+  'SYS' AS DW_CREATE_BY,
+  FROM_UNIXTIME(UNIX_TIMESTAMP(),'yyyy-MM-dd HH:mm:ss') AS DW_CREATE_TIME,
+  'SYS' AS DW_UPDATE_BY,
+  FROM_UNIXTIME(UNIX_TIMESTAMP(),'yyyy-MM-dd') AS DW_UPDATE_TIME,
+  '2018-01-01' as STAT_DATE
+FROM ODS.t_borrows_hist bo INNER JOIN (
+                             SELECT
+                               dbl.bo_id,
+                               to_date(max(dbl.pay_time)) last_repay_date
+                             FROM ODS.t_debt_buy_log_hist dbl INNER JOIN ODS.t_debt_sale_hist ds ON dbl.ds_id = ds.id
+                             WHERE ds.va_id in (23665,809236,882609) AND dbl.status = 1 and dbl.ds_id != 0 
+                             GROUP BY dbl.bo_id) last_repay_bo ON bo.id = last_repay_bo.bo_id
+INNER JOIN TMP.TMP_IDW_HIST_V3_BUY_BID_ID bbi ON bbi.bo_id = bo.id
+WHERE  bo.id not in (select bo_id from dmt_bf.wdzj_npl_bo_legacy)
+union all
+SELECT
+  bo.id as project_id,  
+  bo.id as bo_id,
+  bo.p_id as p_id,
+  if((year(repayment_sum.last_repay_date)*12+month(repayment_sum.last_repay_date))-(year(bo.bo_finish_time)*12+month(bo.bo_finish_time))>0,(year(repayment_sum.last_repay_date)*12+month(repayment_sum.last_repay_date))-(year(bo.bo_finish_time)*12+month(bo.bo_finish_time)),0) as deadline, 
+  case when bo.bo_expect_cat = 2 then '月'
+  else '天' END as deadline_unit,
+  to_date(repayment_sum.last_repay_date)  as huiliu_time,
+  0 as is_delete,
+  'SYS' AS DW_CREATE_BY,
+  FROM_UNIXTIME(UNIX_TIMESTAMP(),'yyyy-MM-dd HH:mm:ss') AS DW_CREATE_TIME,
+  'SYS' AS DW_UPDATE_BY,
+  FROM_UNIXTIME(UNIX_TIMESTAMP(),'yyyy-MM-dd') AS DW_UPDATE_TIME,
+  '2018-01-01' as STAT_DATE
+   from odsopr.borrows bo 
+ inner join 
+ (select max(repayment.br_repay_time) last_repay_date,repayment.bo_id 
+ from odsopr.borrows_repayment repayment
+ where repayment.br_is_repay = 1 group by repayment.bo_id) repayment_sum
+ on bo.id = repayment_sum.bo_id
+ inner join 
+ (SELECT DISTINCT(bo_info.bo_id) bo_id
+from dmt_bf.WDZJ_BO_INFO bo_info 
+INNER JOIN dmt_bf.WDZJ_DEBT_INFO debt_info
+on bo_info.project_id = debt_info.project_id
+WHERE bo_info.bo_type in (1,4,5)
+and debt_info.subscribe_user_name=920272
+and not EXISTS
+(SELECT 1 from dmt_bf.wdzj_repayment_info where cast(project_id as STRING) = bo_info.project_id)
+and 
+(
+ (add_months(bo_info.success_time,bo_info.deadline)>'2018-05-25' and bo_info.deadline_unit = '月')
+ OR 
+ (date_add(bo_info.success_time,bo_info.deadline)>'2018-05-25' and bo_info.deadline_unit = '天')
+))  true_repayment on true_repayment.bo_id = bo.id
+WHERE  bo.id not in (select bo_id from dmt_bf.wdzj_npl_bo_legacy);

@@ -1,0 +1,15 @@
+data a;
+set junfang.loan_prem4plus;
+ym_disbursed=year(disbursed_Date)*100+month(disbursed_Date);
+ym_file=year(file_Date)*100+month(file_Date);
+where floss_mark=1 and loss_amt ne 0 and ym_file ge 201701 ;
+run;
+proc tabulate data=a out=b(drop=_TYPE_ _PAGE_ _TABLE_ );
+class ym_disbursed ym_file;
+var disbursed_amt;
+tables ym_file*disbursed_amt,ym_disbursed;
+run;
+proc transpose data=b out=c;
+by ym_file;
+id ym_disbursed;
+run;

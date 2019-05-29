@@ -1,0 +1,270 @@
+SELECT a.user_id,
+       a.bank_deposit_flag,        --用户注册标识   存管前/后
+       sum(invest_amt),            --投资
+       sum(recharge),              --充值
+       sum(withdraw_amt),          --提现
+       sum(aum) aum,               --在投
+       sum(dw.account_bal) ,       --帐户余额
+       sum(dw.standing_amt)        --站岗资金
+       sum(yjs),                   --已结算
+       sum(deductible_amt),        --优惠券
+       sum(lx),                    --利息
+       sum(yq),                    --逾期
+       sum(wyq)                    --未逾期
+FROM
+(
+        SELECT user_id, 
+               if(to_date(t.register_time) <= '2017-05-31', 'before', 'after') bank_deposit_flag,      --'2017-05-31'存管时间分界线
+               sum(aum) aum, sum(in_invest_amt) in_invest_amt
+          FROM (
+                    SELECT au.user_id,
+                           sum(aum) aum,
+                           sum(in_invest_amt) in_invest_amt
+                      FROM idw.fact_biz_csyy_aum au
+                     WHERE stat_date = '${dt}'
+                       AND aum > 0
+                  GROUP BY 1
+
+                    UNION ALL 
+
+                    SELECT au.user_id,
+                           sum(aum) aum,
+                           sum(in_invest_amt) in_invest_amt
+                      FROM idw.fact_biz_nono_aum au
+                 LEFT JOIN msc.v_nono_invest_special_user sp 
+                        ON au.user_id = sp.user_id
+                     WHERE sp.user_id IS NULL
+                       AND stat_date = '${dt}'
+                       AND aum > 0
+                  GROUP BY 1
+              ) k
+      left join odsopr.user_info t 
+             on t.id = k.user_id 
+       GROUP BY 1, 2 
+       ORDER BY 2, 1  
+) a
+
+LEFT JOIN
+(
+   SELECT user_id,
+          sum(invest_amt) invest_amt
+   FROM
+   (
+        SELECT user_id,
+             sum(invest_amt) invest_amt
+        FROM idw.fact_biz_csyy_invest
+        GROUP BY 1
+        UNION ALL
+        SELECT io.user_id,
+             sum(invest_amt) invest_amt
+        FROM idw.fact_biz_nono_invest io
+        LEFT JOIN msc.v_nono_invest_special_user sp 
+        ON io.user_id = sp.user_id
+        WHERE sp.user_id IS NULL
+        GROUP BY 1
+   ) y
+   GROUP BY 1
+) b 
+ON a.useR_id = b.user_id
+
+LEFT JOIN
+( 
+
+    select user_id, sum(account_bal) account_bal, sum(standing_amt) standing_amt
+    from 
+    (
+        select user_id, role_id, balance,
+               if(role_id = 7, balance, 0) as account_bal,      --账户余额
+               if(role_id = 13, balance, 0) as standing_amt     --站岗资金
+          from odsopr.finance_account 
+         where role_id in ( 7, 13 )   
+        ) t
+        group by 1 
+) dw 
+ON a.user_id = dw.user_id
+
+LEFT JOIN
+(
+   SELECT user_id,
+          sum(withdraw_amt) withdraw_amt
+   FROM
+   (
+      SELECT ds.useR_id,
+             '财富' AS platform,
+             sum(withdraw_amt) withdraw_amt
+      FROM idw.fact_biz_nono_withdraw ds
+      LEFT JOIN msc.v_nono_invest_special_user u 
+      ON u.user_id=ds.user_id
+      WHERE 1=1
+        AND u.user_id IS NULL
+      GROUP BY 1
+      UNION ALL 
+      SELECT useR_id,
+             '财神' AS platform,
+             sum(withdraw_amt) withdraw_amt
+      FROM idw.fact_biz_csyy_withdraw
+      WHERE user_code<>999999999
+      GROUP BY 1,2
+   )o
+   GROUP BY 1
+) m 
+ON a.user_id = m.useR_id
+
+LEFT JOIN
+( 
+    select a.useR_id,sum(income)  recharge
+    from ODSOPR.finance_log a 
+    join odsopr.finance_operation_relation b 
+    on a.operation_relation  = b.id 
+    join odsopr.finance_operation c
+    on b.operation_id = c.id 
+    where 1 = 1
+    and c.operation_name like '%充值%' 
+    group by 1
+) n 
+ON a.useR_id = n.useR_id
+
+
+LEFT JOIN
+(
+    SELECT user_id,
+          sum(price_principal) yjs
+    FROM
+    (
+        SELECT ds.useR_id,
+               '财富' AS platform,
+               sum(ifnull(price_principal,ds.price_amt)) price_principal
+        FROM idw.fact_biz_nono_invest_cash ds
+        LEFT JOIN msc.v_nono_invest_special_user u ON u.user_id=ds.user_id
+        WHERE 1=1
+        AND u.user_id IS NULL
+        AND ds.cash_status = 1
+        GROUP BY 1,
+               2
+        UNION ALL 
+
+        SELECT useR_id,
+               '财神' AS platform,
+               sum(ifnull(price_principal,price_amt)) price_principal
+        FROM idw.fact_biz_csyy_invest_cash
+        WHERE cash_status = 1
+        AND user_code <> 999999999
+        GROUP BY 1,2
+    ) m
+    GROUP BY 1
+) v 
+ON a.useR_id = v.user_id
+
+LEFT JOIN
+( 
+    SELECT cu.user_id ,
+           SUM(CASE
+                   WHEN uc.type = 1 THEN uc.value
+                   ELSE 0
+               END) add_rate ,
+           SUM(CASE
+                   WHEN uc.type = 0 THEN uc.value
+                   ELSE 0
+               END) deductible_amt
+    FROM odsopr.coupon_use cu
+    JOIN odsopr.db_nono_user_coupon uc 
+    ON cu.uv_id = uc.id
+    AND uc.is_used = 1
+    GROUP BY 1 
+) cp 
+ON a.useR_id = cp.useR_id
+
+LEFT JOIN
+(
+    select user_id, sum(amount) lx
+    from 
+    (
+        select fl.user_id, SUM(income-expend) as amount
+        from odsopr.finance_log_all fl
+        inner join 
+        (
+            select id 
+            from odsopr.finance_operation_relation  
+            where source_role = 7 
+            and target_role <> 0 
+            and source_describe not like "%充值%"
+            and id <> 78 
+        )t 
+        on fl.operation_relation = t.id
+        where to_date(create_time) <=to_date('${LAST_DATA_TIME}') 
+        and fl.income > 0
+        --and ( (operation_relation = 470 and remark LIKE '%收益%') or operation_relation=121 or operation_relation = 682)
+        group by 1
+
+        union all
+
+        SELECT user_id,SUM(ba.price_interest*ba.owner_rate)  as amount
+        FROM odsopr.borrows_accept ba  --债转收益
+        WHERE ba.is_pay = 1 
+        AND ba.is_vip = 0
+        and to_date(plan_time)  <= to_date('{LAST_DATA_TIME}')
+        group by 1
+
+        union all
+
+        SELECT useR_id,SUM(dac_price_l)  as amount
+        FROM odsopr.debt_accept --VIP收益
+        where to_date(dac_time) <= to_date('${LAST_DATA_TIME}')
+        group by 1
+    )t
+    group by 1
+) sa 
+ON a.useR_id = sa.useR_id 
+
+left join 
+(
+            SELECT t.useR_id,
+                   sum(price) yq  --t.user_id,sum(price)  price,count(t.bo_id)  bo_id
+              FROM
+          (SELECT a.user_id,
+                  a.price,
+                  
+                  a.bo_id
+                  --b.id va_id,
+                  --b.is_cash
+           FROM odsopr.debt_exchange_account a
+           WHERE  1=1
+             AND a.price>0
+              )t
+        left JOIN idw.fact_in_repay_borrows_snapshot bs ON t.bo_id = bs.bo_id
+        WHERE BS.STAT_DATE = '2019-03-10' --AND  bs.repay_end_day<'2019-01-22'
+
+        and bs.overdue_unrepay_days >0
+        group by 1
+) j 
+on a.user_id = j.user_id
+
+left join 
+(
+
+        SELECT t.user_id,
+               sum(price)  wyq    --t.user_id,sum(price)  price,count(t.bo_id)  bo_id
+        FROM
+          (SELECT a.user_id,
+                  a.price,
+                 -- c.title,
+                  a.bo_id
+                 -- b.id va_id,
+                 -- b.is_cash
+           FROM odsopr.debt_exchange_account a
+           WHERE 
+            -- AND a.va_id>0
+              a.price>0
+             )t
+        left JOIN idw.fact_in_repay_borrows_snapshot bs ON t.bo_id = bs.bo_id
+        WHERE BS.STAT_DATE = '2019-03-10' --AND  bs.repay_end_day<'2019-01-22'
+
+        and bs.overdue_unrepay_days is null
+        group by 1
+) j1 
+on a.user_id = j1.user_id
+
+GROUP BY 1,2
+ORDER BY 1,2 DESC 
+;
+
