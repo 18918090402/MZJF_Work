@@ -187,7 +187,12 @@ set hive.exec.max.created.files = 100000000;
              br.compensate_time as transTime,
              "" as batchnum,
              "" as sendtime
-        from idw.fact_borrows_repayment br 
+        from (
+                  select * from idw.fact_borrows_repayment br
+                   where br.br_transfer_fa_id > 0 
+                     and (br.br_is_repay = 0 or to_date(br.br_repay_time) >= '2019-05-01') 
+                     and not exists(select 1 from msc.tmp_history_debt b where b.id = br.br_id)
+             ) br 
    left join (
                 select bo_id, bo_purpose, user_id, bo_success_time,
                        cast(cast(bo_finish_price as decimal(38,2)) as string) bo_finish_price
@@ -209,11 +214,7 @@ set hive.exec.max.created.files = 100000000;
                     FROM ods.t_user_info_hist
              ) uh
           on bo.user_id = uh.id                 
-       where br.br_transfer_fa_id > 0 
-         and (br_is_repay = 0 or to_date(br_repay_time) >= '2019-05-01') 
-         and exists( select 1 from pdw.report_02_scatterinvest z where z.sourceProductCode = cast(br.bo_id as string) )    --保持与上报的散标一致
-         and not exists(select 1 from msc.tmp_history_debt b where b.id = br.br_id)
-
+       where exists( select 1 from pdw.report_02_scatterinvest z where z.sourceProductCode = cast(br.bo_id as string) )    --保持与上报的散标一致 
        ) t 
      where t.transMoney <> '0.00'
       ;
@@ -238,4 +239,4 @@ set hive.exec.max.created.files = 100000000;
     on b.bo_id = t.bo_id 
     and b.plan_time = t.br_time  
     ; 
-    
+
