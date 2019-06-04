@@ -880,7 +880,7 @@ SELECT "CERT20190411026" as sourceCode,
        '3.3.1、check每个散标的初始债权是否完整推送，即：散标金额=该散标对应的所有的债权金额(投资金额+红包)求和,误差考虑5元以内, 统计并记录漏推散标的数据量。散标状态为【0-初始公布】、【2-流标（弃标）】、【6-筹标中】的散标不做该check。' as norm_name, 
        cast(COUNT(1) as string) as count, 
        to_date(NOW()) as create_time 
-FROM report_check.temp_scat_cred t1 WHERE (cast(surplusAmount as decimal(32,16)) - (cast(invAmount as decimal(32,16)) + cast(redpackage as decimal(32,16)))) > 5.00 
+  FROM report_check.temp_scat_cred t1 WHERE (cast(surplusAmount as decimal(32,16)) - (cast(invAmount as decimal(32,16)) + cast(redpackage as decimal(32,16)))) > 5.00 
 ;
 
 
