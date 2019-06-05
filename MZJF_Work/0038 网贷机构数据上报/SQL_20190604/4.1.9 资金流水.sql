@@ -64,7 +64,7 @@ set hive.exec.max.created.files = 100000000;
       --1-放款
       select ""                                                as version,
              "CERT20190411026"                                 as sourceCode,
-             br.bo_id                                          as transId,
+             concat(cast(br.bo_id as string), '_1')            as transId,
              br.bo_id                                          as sourceProductCode,
              concat(bpc.loan_use_name,                         
                     "需",                                      
@@ -76,7 +76,7 @@ set hive.exec.max.created.files = 100000000;
              "1"                                               as transType,
              printf("%.2f", br.br_price_b * 1.0)               as transMoney,
              certIdcardHash(coalesce(ui.id_num, uh.id_num))    as userIdcardHash,
-             br.create_time                                    as transTime,           --??待确认
+             br.create_time                                    as transTime,           --待确认
              ""                                                as batchnum,            --批次号
              ""                                                as sendtime             --发送时间
         from (
@@ -88,7 +88,8 @@ set hive.exec.max.created.files = 100000000;
                          ,max(br.create_time) create_time
                     from odsopr.borrows_repayment br 
                    where ( br.br_repay_time is null or to_date(br.br_repay_time) >= '2019-05-01' )
-                     and exists(select 1 from msc.tmp_debt_exchange_account_20190430 t where t.bo_id = br.bo_id) 
+                     --and exists(select 1 from msc.tmp_debt_exchange_account_20190430 t where t.bo_id = br.bo_id) 
+                     and exists(select 1 from pdw.report_02_scatterinvest t where cast(t.sourceProductCode as bigint) = br.bo_id) 
                 group by br.bo_id
              ) br 
    left join (
@@ -118,7 +119,7 @@ set hive.exec.max.created.files = 100000000;
       --4-借款服务费
       select ""                                                                              as version,
              "CERT20190411026"                                                               as sourceCode,
-             br.bo_id                                                                        as transId, 
+             concat(cast(br.bo_id as string), '_4')                                          as transId, 
              br.bo_id                                                                        as sourceProductCode,
              concat(bpc.loan_use_name,                                                       
                     "需",                                                                    
@@ -142,7 +143,8 @@ set hive.exec.max.created.files = 100000000;
                          ,max(br.create_time) create_time
                     from odsopr.borrows_repayment br 
                    where ( br.br_repay_time is null or to_date(br.br_repay_time) >= '2019-05-01' )
-                     and exists(select 1 from msc.tmp_debt_exchange_account_20190430 t where t.bo_id = br.bo_id) 
+                     --and exists(select 1 from msc.tmp_debt_exchange_account_20190430 t where t.bo_id = br.bo_id) 
+                     and exists(select 1 from pdw.report_02_scatterinvest t where cast(t.sourceProductCode as bigint) = br.bo_id)
                 group by br.bo_id        
              ) br 
    left join (
@@ -214,7 +216,9 @@ set hive.exec.max.created.files = 100000000;
                     FROM ods.t_user_info_hist
              ) uh
           on bo.user_id = uh.id                 
-       where exists( select 1 from pdw.report_02_scatterinvest z where z.sourceProductCode = cast(br.bo_id as string) )    --保持与上报的散标一致 
+       where exists( select 1 from pdw.report_02_scatterinvest z where z.sourceProductCode = cast(br.bo_id as string) )    --保持与上报的散标一致  剔除AMC
+       
+       
        ) t 
      where t.transMoney <> '0.00'
       ;
@@ -229,14 +233,21 @@ set hive.exec.max.created.files = 100000000;
 --  select    820060538.7 - 638036130.33 ;    --182024408.37
     
     
- --确认 ?? 
+ --代偿恢复（不包含AMC）
     drop view if exists msc.tmp_history_debt ;
     
     create view msc.tmp_history_debt
     as 
-    select t.id from odsopr.borrows_repayment t 
-    inner join ( select distinct bo_id, plan_time from odsopr.invt_history_debt_info where is_transfer = 1 and to_date(update_time) <= '2019-04-30' ) b 
+    select t.id 
+    from odsopr.borrows_repayment t 
+    join ( 
+           select distinct t.bo_id, t.plan_time 
+             from odsopr.invt_history_debt_info t 
+            where t.is_transfer = 1 
+              and to_date(t.update_time) <= '2019-04-30'
+              and not exists(select 1 from idw.amc_bo a where a.bo_id = t.bo_id) 
+         ) b 
     on b.bo_id = t.bo_id 
-    and b.plan_time = t.br_time  
+    and b.plan_time = t.br_time 
     ; 
 

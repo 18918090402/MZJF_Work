@@ -895,6 +895,7 @@ FROM report_check.temp_scat_cred t1 WHERE (cast(surplusAmount as decimal(32,16))
 
 
 
+
 INSERT INTO report_check.norm
 SELECT  "CERT20190411026" as sourceCode, 
 '3.3.2、统计所有初始债权对应的投资流水（流水类型为：2）没有推送过来的债权数量 ' as norm_name, 

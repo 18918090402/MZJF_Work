@@ -33,7 +33,7 @@ on a.dea_id = t.id
 where t.price >= 0.01 
 and t.bank_flag = 1         --存管
 and t.status in (1, 2, 3)   --1:持有中 2：债转中 3：还款中
-and exists(select 1 from pdw.report_02_scatterinvest z where z.sourceProductCode = cast(t.bo_id as string)) 
+and exists( select 1 from pdw.report_02_scatterinvest z where z.sourceProductCode = cast(t.bo_id as string) ) 
 -----and exists(select 1 from msc.tmp_userinfo_20190520 x where x.user_id = t.user_id) 
 ;
 
