@@ -27,10 +27,12 @@ create table pdw.report_01_userinfo
     ,userBankAccount     string comment '交易银行卡号'
     ,batchNum            string comment '批次号'
     ,sendTime            string comment '发送时间'
+    ,id                  bigint comment 'id'
+    ,batch_type          string comment '批量类型'
 )
 comment '4.1.1-用户信息表'
 row format delimited null defined as '' stored as parquet
-tblproperties ("parquet.compression"="snappy")
+tblproperties ("orc.compression"="snappy")
 ;
 
 
@@ -63,10 +65,12 @@ create table pdw.report_02_scatterinvest
     ,projectSource              string comment '散标来源'
     ,batchNum                   string comment '批次号'
     ,sendTime                   string comment '发送时间'
+    ,id                         bigint comment 'id'
+    ,batch_type                 string comment '批量类型'
 )
 comment '4.1.2-散标信息表'
 row format delimited null defined as '' stored as parquet
-tblproperties ("parquet.compression"="snappy")
+tblproperties ("orc.compression"="snappy")
 ;
 
 --4.1.3-散标状态表： report_03_status
@@ -81,10 +85,12 @@ create table pdw.report_03_status
     ,productDate        string comment '状态更新时间'
     ,batchNum           string comment '批次号'
     ,sendTime           string comment '发送时间'
+    ,id                 bigint comment 'id'    
+    ,batch_type         string comment '批量类型'
 )
 comment '4.1.3-散标状态表'
 row format delimited null defined as '' stored as parquet
-tblproperties ("parquet.compression"="snappy")
+tblproperties ("orc.compression"="snappy")
 ;
 
 
@@ -106,10 +112,12 @@ create table pdw.report_04_repayplan
     ,repayTime              string comment '本条记录(当期)应还款时间点'
     ,batchNum               string comment '批次号'
     ,sendTime               string comment '发送时间'
+    ,id                     bigint comment 'id'    
+    ,batch_type             string comment '批量类型'
 )
 comment '4.1.4-还款计划表'
 row format delimited null defined as '' stored as parquet
-tblproperties ("parquet.compression"="snappy")
+tblproperties ("orc.compression"="snappy")
 ;
 
 
@@ -130,10 +138,12 @@ create table pdw.report_05_creditor
     ,lockTime               string comment '锁定截止时间'
     ,batchNum               string comment '批次号'
     ,sendTime               string comment '发送时间'
+    ,id                     bigint comment 'id'    
+    ,batch_type             string comment '批量类型'
 )
 comment '4.1.5-初始债权表'
 row format delimited null defined as '' stored as parquet
-tblproperties ("parquet.compression"="snappy")
+tblproperties ("orc.compression"="snappy")
 ;
 
 --4.1.9-交易流水表： report_09_transact
@@ -155,10 +165,12 @@ create table pdw.report_09_transact
     ,transTime          string comment '交易发生时间'
     ,batchNum           string comment '批次号'
     ,sendTime           string comment '发送时间'
+    ,id                 bigint comment 'id'    
+    ,batch_type         string comment '批量类型'
 )
 comment '4.1.9-交易流水表'
 row format delimited null defined as '' stored as parquet
-tblproperties ("parquet.compression"="snappy")
+tblproperties ("orc.compression"="snappy")
 ;
 
 
@@ -178,10 +190,12 @@ create table pdw.report_10_lendproduct
     ,term                       string comment '产品期限(服务期限)(天)'
     ,batchNum                   string comment '批次号'
     ,sendTime                   string comment '发送时间'
+    ,id                         bigint comment 'id'    
+    ,batch_type                 string comment '批量类型'
 )
 comment '4.1.10-产品信息表'
 row format delimited null defined as '' stored as parquet
-tblproperties ("parquet.compression"="snappy")
+tblproperties ("orc.compression"="snappy")
 ;
 
 
@@ -198,10 +212,12 @@ create table pdw.report_11_lendproductconfig
     ,userIdcardHash         string comment '出借用户证件号hash值'
     ,batchNum               string comment '批次号'
     ,sendTime               string comment '发送时间'
+    ,id                     bigint comment 'id'    
+    ,batch_type             string comment '批量类型'
 )
 comment '4.1.11-产品配置表'
 row format delimited null defined as '' stored as parquet
-tblproperties ("parquet.compression"="snappy")
+tblproperties ("orc.compression"="snappy")
 ;
 
 
@@ -220,24 +236,26 @@ create table pdw.report_12_lendparticulars
     ,transTime              string comment '交易发生时间'
     ,batchNum               string comment '批次号'
     ,sendTime               string comment '发送时间'
+    ,id                     bigint comment 'id'    
+    ,batch_type             string comment '批量类型'
 )
 comment '4.1.12-投资明细表'
 row format delimited null defined as '' stored as parquet
-tblproperties ("parquet.compression"="snappy")
+tblproperties ("orc.compression"="snappy")
 ;
 
 
 
 --impala refresh
-INVALIDATE METADATA report_01_userinfo	;
-INVALIDATE METADATA report_02_scatterinvest;	
-INVALIDATE METADATA report_03_status	;
-INVALIDATE METADATA report_04_repayplan	;
-INVALIDATE METADATA report_05_creditor	;
-INVALIDATE METADATA report_09_transact	;
-INVALIDATE METADATA report_10_lendproduct;	
-INVALIDATE METADATA report_11_lendproductconfig;	
-INVALIDATE METADATA report_12_lendparticulars	;
+INVALIDATE METADATA pdw.report_01_userinfo	;
+INVALIDATE METADATA pdw.report_02_scatterinvest;	
+INVALIDATE METADATA pdw.report_03_status	;
+INVALIDATE METADATA pdw.report_04_repayplan	;
+INVALIDATE METADATA pdw.report_05_creditor	;
+INVALIDATE METADATA pdw.report_09_transact	;
+INVALIDATE METADATA pdw.report_10_lendproduct;	
+INVALIDATE METADATA pdw.report_11_lendproductconfig;	
+INVALIDATE METADATA pdw.report_12_lendparticulars	;
 
 
 
@@ -261,10 +279,12 @@ create table pdw.report_06_transferproject
     ,transferDate           string comment '转让项目发布的日期'
     ,batchNum               string comment '批次号'
     ,sendTime               string comment '发送时间'
+    ,id                     bigint comment 'id'
+    ,batch_type             string comment '批量类型'
 )
 comment '4.1.6 债权转让表'
 row format delimited null defined as '' stored as parquet
-tblproperties ("parquet.compression"="snappy")
+tblproperties ("orc.compression"="snappy")
 ;
 
 --4.1.7 转让状态表： pdw.report_07_transferstatus
@@ -281,10 +301,12 @@ create table pdw.report_07_transferstatus
     ,productDate            string comment '状态更新时间'
     ,batchNum               string comment '批次号'
     ,sendTime               string comment '发送时间'
+    ,id                     bigint comment 'id'    
+    ,batch_type             string comment '批量类型'
 )
 comment '4.1.7 转让状态表'
 row format delimited null defined as '' stored as parquet
-tblproperties ("parquet.compression"="snappy")
+tblproperties ("orc.compression"="snappy")
 ;
 
 --4.1.8 承接转让表： pdw.report_08_undertakeinfo
@@ -307,10 +329,12 @@ create table pdw.report_08_undertakeinfo
     ,lockTime               string comment '锁定截止时间'
     ,batchNum               string comment '批次号'
     ,sendTime               string comment '发送时间'
+    ,id                     bigint comment 'id'    
+    ,batch_type             string comment '批量类型'
 )
 comment '4.1.8 承接转让表'
 row format delimited null defined as '' stored as parquet
-tblproperties ("parquet.compression"="snappy")
+tblproperties ("orc.compression"="snappy")
 ;
 
 
@@ -353,7 +377,7 @@ CREATE TABLE pdw.user_info  (
 )
 comment 'user_info'
 row format delimited null defined as '' stored as parquet
-tblproperties ("parquet.compression"="snappy")
+tblproperties ("orc.compression"="snappy")
 ;
 
 
